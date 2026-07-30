@@ -14,6 +14,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
 
+    <!-- GENERATEUR PDF HTML2PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
     <script>
         tailwind.config = {
             theme: {
@@ -198,9 +201,14 @@
                     </div>
                 </div>
 
-                <!-- ENVOIS ET VALIDATION -->
+                <!-- ACTIONS, EXPORT PDF & ENVOIS -->
                 <div class="space-y-3 pt-2">
-                    <div class="text-xs font-display font-bold uppercase tracking-wider text-slate-500">Envoi rapide au client :</div>
+                    <div class="text-xs font-display font-bold uppercase tracking-wider text-slate-500">Génération du Document & Envois :</div>
+                    
+                    <button onclick="generatePDF()" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-display font-bold uppercase tracking-wider py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 text-sm shadow-md shadow-rose-600/10">
+                        <i data-lucide="file-text" class="w-4 h-4"></i> Télécharger le Devis au format PDF
+                    </button>
+
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <button onclick="exportWhatsApp()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-display font-bold uppercase tracking-wider py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 text-sm shadow-md shadow-emerald-600/10">
                             <i data-lucide="message-square" class="w-4 h-4"></i> WhatsApp
@@ -212,7 +220,8 @@
                             <i data-lucide="mail" class="w-4 h-4"></i> Email
                         </button>
                     </div>
-                    <button onclick="saveDevis('Enregistré')" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-display font-extrabold uppercase tracking-wider py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 text-base shadow-lg">
+
+                    <button onclick="saveDevis('Enregistré')" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-display font-extrabold uppercase tracking-wider py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 text-base shadow-lg mt-2">
                         <i data-lucide="check-circle-2" class="w-5 h-5 text-amber-500"></i> Enregistrer dans Mes Devis
                     </button>
                 </div>
@@ -220,9 +229,8 @@
 
         </section>
 
-        <!-- TAB 2: MES DEVIS & RELANCES & SUPPRESSION -->
+        <!-- TAB 2: MES DEVIS -->
         <section id="tab-admin" class="tab-content hidden space-y-6">
-            
             <div class="flex items-center justify-between">
                 <h1 class="font-display text-3xl font-extrabold uppercase text-slate-900">Mes Devis Enregistrés</h1>
                 <button onclick="showTab('app')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-display font-bold text-sm px-4 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm">
@@ -230,7 +238,6 @@
                 </button>
             </div>
 
-            <!-- STATISTIQUES -->
             <div class="grid grid-cols-2 gap-4">
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                     <div class="text-xs font-display font-bold uppercase tracking-wider text-slate-500 mb-1">Nombre de Devis</div>
@@ -242,7 +249,6 @@
                 </div>
             </div>
 
-            <!-- TABLEAU -->
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
@@ -255,15 +261,13 @@
                             </tr>
                         </thead>
                         <tbody id="devis-table-body" class="divide-y divide-slate-100 text-sm">
-                            <!-- INJECTÉ PAR JS -->
                         </tbody>
                     </table>
                 </div>
             </div>
-
         </section>
 
-        <!-- TAB 3: E-REPORTING (B2C) -->
+        <!-- TAB 3: E-REPORTING -->
         <section id="tab-ereporting" class="tab-content hidden space-y-6">
             <div>
                 <h1 class="font-display text-3xl font-extrabold uppercase text-slate-900">Module E-Reporting</h1>
@@ -278,12 +282,11 @@
                     </button>
                 </div>
                 <div class="space-y-3" id="ereporting-list">
-                    <!-- INJECTÉ PAR JS -->
                 </div>
             </div>
         </section>
 
-        <!-- TAB 4: TARIFS & ADHÉSION -->
+        <!-- TAB 4: TARIFS -->
         <section id="tab-tarifs" class="tab-content hidden space-y-8">
             <div class="text-center max-w-xl mx-auto space-y-2">
                 <h1 class="font-display text-4xl font-extrabold uppercase text-slate-900">Tarifs Simples. Sans Piège.</h1>
@@ -360,6 +363,54 @@
     <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
         Dicta'Devis — Devis BTP conformes, dictés en une minute.
     </footer>
+
+    <!-- TEMPLATE MASQUÉ POUR GÉNÉRATION DU PDF -->
+    <div id="pdf-template" class="hidden p-8 bg-white text-slate-900 space-y-6 max-w-2xl mx-auto border border-slate-300">
+        <div class="flex justify-between items-start border-b pb-4">
+            <div>
+                <h1 class="text-2xl font-bold uppercase" id="pdf-company-name">ENTREPRISE BTP</h1>
+                <p class="text-xs text-slate-500" id="pdf-company-siret">SIRET : -</p>
+                <p class="text-xs text-slate-500" id="pdf-insurance">Décennale : -</p>
+            </div>
+            <div class="text-right">
+                <h2 class="text-xl font-black text-amber-600">DEVIS BTP</h2>
+                <p class="text-xs text-slate-500" id="pdf-date">Date : -</p>
+            </div>
+        </div>
+
+        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+            <h3 class="text-xs font-bold uppercase text-slate-400 mb-1">Client :</h3>
+            <p class="font-bold text-sm" id="pdf-client-name">-</p>
+            <p class="text-xs text-slate-600" id="pdf-client-phone">-</p>
+            <p class="text-xs text-slate-600" id="pdf-client-email">-</p>
+        </div>
+
+        <table class="w-full text-left border-collapse text-xs">
+            <thead>
+                <tr class="bg-slate-100 border-b border-slate-300 font-bold uppercase">
+                    <th class="p-2">Prestation</th>
+                    <th class="p-2 text-center">Qté</th>
+                    <th class="p-2 text-right">Prix HT</th>
+                    <th class="p-2 text-right">TVA</th>
+                    <th class="p-2 text-right">Total HT</th>
+                </tr>
+            </thead>
+            <tbody id="pdf-items-body" class="divide-y divide-slate-200">
+            </tbody>
+        </table>
+
+        <div class="flex justify-end pt-4">
+            <div class="w-1/2 space-y-1 text-xs">
+                <div class="flex justify-between"><span>Total HT :</span><span id="pdf-total-ht">0.00 €</span></div>
+                <div class="flex justify-between"><span>TVA :</span><span id="pdf-total-tva">0.00 €</span></div>
+                <div class="flex justify-between font-bold text-sm border-t pt-1"><span>TOTAL TTC :</span><span id="pdf-total-ttc" class="text-amber-600">0.00 €</span></div>
+            </div>
+        </div>
+
+        <div class="border-t pt-4 text-[10px] text-slate-400 text-center">
+            Bon pour accord et signature du client (Précédé de la mention "Bon pour accord") :
+        </div>
+    </div>
 
     <!-- LOGIQUE JAVASCRIPT ET APPLICATION -->
     <script>
@@ -444,7 +495,58 @@
             renderItems();
         }
 
-        // ENREGISTREMENT VOCAL IA DIRECT
+        // GENERATION DU PDF
+        function generatePDF() {
+            const clientName = document.getElementById('client-name').value;
+            const clientPhone = document.getElementById('client-phone').value;
+            const clientEmail = document.getElementById('client-email').value;
+            
+            document.getElementById('pdf-company-name').innerText = document.getElementById('company-name').value;
+            document.getElementById('pdf-company-siret').innerText = 'SIRET : ' + document.getElementById('company-siret').value;
+            document.getElementById('pdf-insurance').innerText = 'Décennale : ' + document.getElementById('insurance-name').value + ' (' + document.getElementById('insurance-num').value + ')';
+            document.getElementById('pdf-date').innerText = 'Date : ' + new Date().toLocaleDateString('fr-FR');
+
+            document.getElementById('pdf-client-name').innerText = clientName;
+            document.getElementById('pdf-client-phone').innerText = 'Tél : ' + clientPhone;
+            document.getElementById('pdf-client-email').innerText = 'Email : ' + clientEmail;
+
+            const tbody = document.getElementById('pdf-items-body');
+            tbody.innerHTML = '';
+            
+            items.forEach(item => {
+                const itemHT = item.quantite * item.prix;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-2">${item.designation}</td>
+                    <td class="p-2 text-center">${item.quantite}</td>
+                    <td class="p-2 text-right">${item.prix.toFixed(2)} €</td>
+                    <td class="p-2 text-right">${item.tva}%</td>
+                    <td class="p-2 text-right font-bold">${itemHT.toFixed(2)} €</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('pdf-total-ht').innerText = document.getElementById('total-ht').innerText;
+            document.getElementById('pdf-total-tva').innerText = document.getElementById('total-tva').innerText;
+            document.getElementById('pdf-total-ttc').innerText = document.getElementById('total-ttc').innerText;
+
+            const element = document.getElementById('pdf-template');
+            element.classList.remove('hidden');
+
+            const opt = {
+                margin:       0.5,
+                filename:     `Devis_BTP_${clientName.replace(/\s+/g, '_')}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                element.classList.add('hidden');
+            });
+        }
+
+        // ENREGISTREMENT VOCAL IA
         async function toggleRecording() {
             const btn = document.getElementById('mic-btn');
             const status = document.getElementById('mic-status');
@@ -489,7 +591,6 @@
                                 status.innerText = "Devis généré avec succès !";
                                 status.className = "text-emerald-600 font-display uppercase tracking-wider text-xl font-extrabold mb-1";
                             } else {
-                                // Affiche directement l'erreur de l'API à l'écran !
                                 const errMsg = result.details || result.error || "Problème d'analyse";
                                 status.innerText = "Erreur : " + errMsg;
                                 status.className = "text-rose-600 font-display uppercase tracking-wider text-base font-bold mb-1";
@@ -661,7 +762,7 @@
             const client = document.getElementById('client-name').value;
             const phone = document.getElementById('client-phone').value;
             const total = document.getElementById('total-ttc').innerText;
-            const text = encodeURIComponent(`Bonjour ${client}, voici votre devis BTP d'un montant de ${total}. Validez-le directement en répondant à ce message.`);
+            const text = encodeURIComponent(`Bonjour ${client}, veuillez trouver votre devis BTP d'un montant de ${total}. Merci de me confirmer votre accord par retour de message.`);
             window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
         }
 
@@ -669,7 +770,7 @@
             const client = document.getElementById('client-name').value;
             const phone = document.getElementById('client-phone').value;
             const total = document.getElementById('total-ttc').innerText;
-            const text = encodeURIComponent(`Bonjour ${client}, voici votre devis BTP d'un montant de ${total}. Validez-le directement par retour de SMS.`);
+            const text = encodeURIComponent(`Bonjour ${client}, votre devis BTP s'élève à ${total}. Vous pouvez valider directement en répondant à ce SMS.`);
             window.open(`sms:${phone}?body=${text}`, '_blank');
         }
 
@@ -678,7 +779,7 @@
             const email = document.getElementById('client-email').value;
             const total = document.getElementById('total-ttc').innerText;
             const subject = encodeURIComponent(`Votre devis BTP — ${client}`);
-            const body = encodeURIComponent(`Bonjour ${client},\n\nVeuillez trouver ci-joint votre devis BTP d'un montant de ${total}.\n\nCordialement.`);
+            const body = encodeURIComponent(`Bonjour ${client},\n\nVeuillez trouver ci-joint l'estimation pour vos travaux BTP d'un montant total de ${total}.\n\nRestant à votre disposition,\nCordialement.`);
             window.open(`mailto:${email}?subject=${subject}&body=${body}`, '_blank');
         }
 
