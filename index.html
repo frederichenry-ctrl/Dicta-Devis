@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>Dicta'Devis — Le devis BTP à la voix</title>
 
-    <!-- POLICES BARLOW & BARLOW CONDENSED (DESIGN BTP) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600;700&display=swap"/>
 
-    <!-- TAILWIND CSS CDN & LUCIDE ICONS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
 
@@ -60,14 +58,9 @@
             100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
         }
 
-        /* STYLE D'IMPRESSION POUR LE PDF PRO */
         @media print {
-            body * {
-                visibility: hidden;
-            }
-            #pdf-print-zone, #pdf-print-zone * {
-                visibility: visible;
-            }
+            body * { visibility: hidden; }
+            #pdf-print-zone, #pdf-print-zone * { visibility: visible; }
             #pdf-print-zone {
                 position: absolute;
                 left: 0;
@@ -76,18 +69,14 @@
                 padding: 20px;
                 background: white;
             }
-            .no-print {
-                display: none !important;
-            }
+            .no-print { display: none !important; }
         }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between bg-slate-100 text-slate-900">
 
-    <!-- BANDEAU HACHURÉ CHANTIER -->
     <div class="hazard-stripe h-2.5 w-full no-print"></div>
 
-    <!-- HEADER / NAVIGATION -->
     <header class="bg-white mx-auto flex w-full max-w-5xl items-center justify-between px-5 py-4 border-b border-slate-200 shadow-sm sticky top-0 z-50 no-print">
         <div class="flex items-center gap-2 cursor-pointer" onclick="showTab('app')">
             <span class="font-display text-3xl font-extrabold tracking-wide uppercase text-slate-900">
@@ -114,13 +103,11 @@
         </nav>
     </header>
 
-    <!-- CONTENU PRINCIPAL -->
     <main class="max-w-4xl mx-auto px-5 py-8 flex-1 w-full">
 
-        <!-- TAB 1: ACCUEIL & DICTÉE -->
+        <!-- TAB 1: DICTÉE & DEVÍS -->
         <section id="tab-app" class="tab-content space-y-8">
 
-            <!-- HERO SECTION IMPACTANTE -->
             <div class="text-center space-y-3 no-print">
                 <p class="font-display text-xs sm:text-sm uppercase tracking-[0.25em] text-amber-600 font-extrabold">Électriciens · Plombiers · Peintres · Maçons</p>
                 <h1 class="text-4xl leading-none sm:text-6xl font-display font-black uppercase tracking-tight flex items-center justify-center gap-2.5 flex-wrap">
@@ -135,32 +122,26 @@
                 </p>
             </div>
 
-            <!-- ENREGISTREUR VOCAL CENTRAL -->
             <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-lg text-center flex flex-col items-center justify-center no-print">
-                
                 <div id="mic-status" class="text-slate-800 font-display uppercase tracking-wider text-xl font-extrabold mb-1">
                     Appuyez et dictez votre chantier
                 </div>
                 <div class="text-xs text-slate-500 font-medium mb-4">L'IA s'occupe de la TVA, des quantités et des calculs</div>
 
-                <!-- BOUTON MICROPHONE GEANT CHANTIER -->
                 <button id="mic-btn" onclick="toggleRecording()" class="w-28 h-28 sm:w-36 sm:h-36 rounded-full bg-amber-500 text-slate-950 flex items-center justify-center shadow-xl shadow-amber-500/30 hover:bg-amber-400 transition transform active:scale-95 my-2">
                     <i data-lucide="mic" id="mic-icon" class="w-12 h-12 sm:w-16 sm:h-16"></i>
                 </button>
 
-                <!-- MINUTEUR -->
                 <div id="timer" class="hidden mt-3 font-mono font-bold text-lg text-amber-600 bg-amber-50 px-4 py-1.5 rounded-full border border-amber-200">
                     00:00
                 </div>
 
-                <!-- EXEMPLE A DICTER -->
                 <div class="mt-6 bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs text-slate-600 max-w-md text-left">
                     <span class="font-display uppercase tracking-wider text-amber-600 font-bold block mb-1">💡 Exemple à dicter :</span>
                     <span class="italic">"Client Jean Dupont au Mans. Pose d'un tableau électrique Schneider 3 rangées, 450 euros. Installation de 5 prises Céliane Legrand, 150 euros. TVA 10 pourcent."</span>
                 </div>
             </div>
 
-            <!-- FORMULAIRE D'ÉDITION EXPRESS -->
             <div id="editor-section" class="bg-white rounded-3xl border border-slate-200 shadow-lg p-6 space-y-6">
                 
                 <div class="flex items-center justify-between border-b border-slate-100 pb-4 no-print">
@@ -173,14 +154,13 @@
                     </span>
                 </div>
 
-                <!-- INFORMATIONS CLIENT -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 no-print">
                     <div>
                         <label class="block text-xs font-display font-bold uppercase tracking-wider text-slate-500 mb-1">Nom Client</label>
                         <input type="text" id="client-name" value="Jean Dupont" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-medium focus:border-amber-500 focus:bg-white focus:outline-none text-slate-900">
                     </div>
                     <div>
-                        <label class="block text-xs font-display font-bold uppercase tracking-wider text-slate-500 mb-1">Mobile Client (Relance SMS)</label>
+                        <label class="block text-xs font-display font-bold uppercase tracking-wider text-slate-500 mb-1">Mobile (Relance SMS)</label>
                         <input type="tel" id="client-phone" value="0612345678" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-medium focus:border-amber-500 focus:bg-white focus:outline-none text-slate-900">
                     </div>
                     <div>
@@ -189,7 +169,6 @@
                     </div>
                 </div>
 
-                <!-- PRESTATIONS -->
                 <div class="no-print">
                     <div class="flex items-center justify-between mb-2">
                         <label class="block text-xs font-display font-bold uppercase tracking-wider text-slate-500">Prestations du Devis</label>
@@ -197,13 +176,9 @@
                             <i data-lucide="plus" class="w-3.5 h-3.5"></i> Ajouter une ligne
                         </button>
                     </div>
-
-                    <div class="space-y-3" id="items-container">
-                        <!-- INJECTÉ PAR JS -->
-                    </div>
+                    <div class="space-y-3" id="items-container"></div>
                 </div>
 
-                <!-- CALCULS FINANCIERS -->
                 <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 space-y-2 no-print">
                     <div class="flex justify-between text-sm text-slate-600">
                         <span>Total HT</span>
@@ -219,20 +194,18 @@
                     </div>
                 </div>
 
-                <!-- ACTIONS D'EXPORTation ET ENVOIS -->
+                <!-- ACTIONS PRINCIPALES : PDF ET EMAIL -->
                 <div class="space-y-3 pt-2 no-print">
-                    <div class="text-xs font-display font-bold uppercase tracking-wider text-slate-500">Document & Envoi :</div>
-                    
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <button onclick="downloadPDF()" class="bg-rose-600 hover:bg-rose-700 text-white font-display font-bold uppercase tracking-wider py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 text-sm shadow-md shadow-rose-600/10">
+                        <button onclick="downloadPDF()" class="bg-rose-600 hover:bg-rose-700 text-white font-display font-bold uppercase tracking-wider py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 text-sm shadow-md">
                             <i data-lucide="download" class="w-4 h-4"></i> Télécharger le PDF
                         </button>
-                        <button onclick="exportEmail()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-display font-bold uppercase tracking-wider py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 text-sm shadow-md shadow-indigo-600/10">
+                        <button onclick="exportEmail()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-display font-bold uppercase tracking-wider py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 text-sm shadow-md">
                             <i data-lucide="mail" class="w-4 h-4"></i> Envoyer par Email
                         </button>
                     </div>
 
-                    <button onclick="saveDevis('Enregistré')" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-display font-extrabold uppercase tracking-wider py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 text-base shadow-lg mt-2">
+                    <button onclick="saveDevis('Enregistré')" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-display font-extrabold uppercase tracking-wider py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 text-base shadow-lg">
                         <i data-lucide="check-circle-2" class="w-5 h-5 text-amber-500"></i> Enregistrer dans Mes Devis
                     </button>
                 </div>
@@ -271,29 +244,32 @@
                                 <th class="p-4 text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="devis-table-body" class="divide-y divide-slate-100 text-sm">
-                        </tbody>
+                        <tbody id="devis-table-body" class="divide-y divide-slate-100 text-sm"></tbody>
                     </table>
                 </div>
             </div>
         </section>
 
-        <!-- TAB 3: E-REPORTING -->
+        <!-- TAB 3: E-REPORTING B2C & EXPORT CONFORME -->
         <section id="tab-ereporting" class="tab-content hidden space-y-6 no-print">
-            <div>
-                <h1 class="font-display text-3xl font-extrabold uppercase text-slate-900">Module E-Reporting</h1>
-                <p class="text-slate-500 text-sm">Gestion des transmissions fiscales des encaissements (Conformité 2026).</p>
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="font-display text-3xl font-extrabold uppercase text-slate-900">Module E-Reporting Fiscal</h1>
+                    <p class="text-slate-500 text-sm">Gestion des déclarations d'encaissements B2C et export conforme (PPF / PDP).</p>
+                </div>
+                <button onclick="downloadEReportingCSV()" class="bg-slate-900 hover:bg-slate-800 text-white font-display font-bold text-xs uppercase px-4 py-2.5 rounded-xl transition flex items-center gap-2 shadow-sm">
+                    <i data-lucide="file-spreadsheet" class="w-4 h-4 text-amber-500"></i> Exporter CSV / Excel
+                </button>
             </div>
 
             <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-4">
                 <div class="flex items-center justify-between border-b border-slate-100 pb-4">
                     <h2 class="font-display text-xl font-bold text-slate-900">Transactions B2C en attente</h2>
                     <button onclick="transmitEReporting()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-display font-bold uppercase text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-2 shadow-sm">
-                        <i data-lucide="send" class="w-4 h-4"></i> Transmettre au PPF
+                        <i data-lucide="send" class="w-4 h-4"></i> Télétransmettre au PPF
                     </button>
                 </div>
-                <div class="space-y-3" id="ereporting-list">
-                </div>
+                <div class="space-y-3" id="ereporting-list"></div>
             </div>
         </section>
 
@@ -327,8 +303,7 @@
                         <ul class="space-y-3 text-sm text-slate-700">
                             <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-amber-600"></i> <strong>Devis vocaux illimités</strong></li>
                             <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-amber-600"></i> Factur-X & E-Reporting inclus</li>
-                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-amber-600"></i> Envois WhatsApp, SMS & Email</li>
-                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-amber-600"></i> Module de Relances 1-Click</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-amber-600"></i> Envois Email & Relances SMS</li>
                         </ul>
                     </div>
                     <button onclick="alert('Redirection vers la page de paiement sécurisée Stripe...')" class="mt-8 w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-display font-extrabold uppercase py-3 rounded-xl transition shadow-md shadow-amber-500/20">Passer en Pro</button>
@@ -370,12 +345,11 @@
 
     </main>
 
-    <!-- FOOTER -->
     <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500 no-print">
         Dicta'Devis — Devis BTP conformes, dictés en une minute.
     </footer>
 
-    <!-- ZONE D'IMPRESSION PDF PRO (GENERATION PROPRE ET GARANTIE) -->
+    <!-- GABARIT D'IMPRESSION DU PDF -->
     <div id="pdf-print-zone" class="hidden">
         <div class="border-b border-slate-300 pb-4 mb-6 flex justify-between items-start">
             <div>
@@ -406,8 +380,7 @@
                     <th class="p-3 text-right">Total HT</th>
                 </tr>
             </thead>
-            <tbody id="pdf-items-body" class="divide-y divide-slate-200">
-            </tbody>
+            <tbody id="pdf-items-body" class="divide-y divide-slate-200"></tbody>
         </table>
 
         <div class="flex justify-end pt-4 mb-8">
@@ -425,7 +398,6 @@
         </div>
     </div>
 
-    <!-- LOGIQUE JAVASCRIPT ET APPLICATION -->
     <script>
         lucide.createIcons();
 
@@ -508,7 +480,7 @@
             renderItems();
         }
 
-        // GENERATION DU PDF PAR IMPRESSION NATIVE DU NAVIGATEUR (100% FONCTIONNEL SUR TOUT SYSTEME)
+        // TÉLÉCHARGEMENT PDF (IMPRESSION NATIVE UNIVERSELLE)
         function downloadPDF() {
             const clientName = document.getElementById('client-name').value;
             const clientPhone = document.getElementById('client-phone').value;
@@ -548,18 +520,16 @@
             
             window.print();
 
-            setTimeout(() => {
-                printZone.classList.add('hidden');
-            }, 500);
+            setTimeout(() => { printZone.classList.add('hidden'); }, 500);
         }
 
-        // ENVOI PAR EMAIL
+        // ENVOI EMAIL AUTOMATIQUE
         function exportEmail() {
             const client = document.getElementById('client-name').value;
             const email = document.getElementById('client-email').value;
             const total = document.getElementById('total-ttc').innerText;
             
-            alert("Conseil : N'oubliez pas de joindre le fichier PDF téléchargé à votre email avant d'envoyer.");
+            alert("N'oubliez pas d'attacher le fichier PDF téléchargé à votre email avant d'envoyer !");
 
             const subject = encodeURIComponent(`Votre Devis BTP — ${client}`);
             const body = encodeURIComponent(`Bonjour ${client},\n\nVeuillez trouver ci-joint votre devis BTP d'un montant total de ${total}.\n\nRestant à votre entière disposition pour toute question,\n\nCordialement.`);
@@ -593,9 +563,7 @@
                         try {
                             const response = await fetch('/api/transcribe', {
                                 method: 'POST',
-                                headers: {
-                                    'Content-Type': 'audio/webm'
-                                },
+                                headers: { 'Content-Type': 'audio/webm' },
                                 body: audioBlob
                             });
                             
@@ -712,7 +680,7 @@
                     <td class="p-4 font-bold text-slate-900">${d.client}</td>
                     <td class="p-4 font-extrabold text-amber-600">${d.total}</td>
                     <td class="p-4 text-right space-x-2">
-                        <button onclick="relancerClientSMS(${index})" class="bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 text-xs font-display font-bold uppercase px-3 py-1.5 rounded-lg transition flex items-center gap-1 inline-flex">
+                        <button onclick="relancerClientSMS(${index})" class="bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 text-xs font-display font-bold uppercase px-3 py-1.5 rounded-lg transition inline-flex items-center gap-1">
                             <i data-lucide="smartphone" class="w-3.5 h-3.5"></i> Relance SMS
                         </button>
                         <button onclick="deleteDevis(${index})" class="bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100 text-xs font-display font-bold uppercase px-2.5 py-1.5 rounded-lg transition inline-flex">
@@ -737,19 +705,19 @@
             }
         }
 
-        // RELANCE CIBLÉE PAR SMS DIRECT
         function relancerClientSMS(index) {
             const devis = devisList[index];
             const msg = encodeURIComponent(`Bonjour ${devis.client}, je vous relance concernant le devis BTP d'un montant de ${devis.total} envoyé par email. Avez-vous pu le consulter ? Restant à votre disposition si vous avez des questions !`);
             window.open(`sms:${devis.phone}?body=${msg}`, '_blank');
         }
 
+        // MODULE E-REPORTING (AFFICHAGE & EXPORT CSV)
         function renderEReportingTable() {
             const container = document.getElementById('ereporting-list');
             container.innerHTML = '';
 
             if (devisList.length === 0) {
-                container.innerHTML = '<div class="text-center py-6 text-slate-400 text-sm">Aucune transaction en attente d\'E-Reporting.</div>';
+                container.innerHTML = '<div class="text-center py-6 text-slate-400 text-sm">Aucune transaction B2C enregistrée.</div>';
                 return;
             }
 
@@ -759,7 +727,7 @@
                 item.innerHTML = `
                     <div>
                         <div class="font-bold text-sm text-slate-900">${d.client} (${d.id})</div>
-                        <div class="text-xs text-slate-500">${d.total} — ${d.date}</div>
+                        <div class="text-xs text-slate-500">${d.total} — Date: ${d.date}</div>
                     </div>
                     <span class="text-xs font-bold px-2.5 py-1 rounded-full ${d.ereportingStatus === 'Transmis' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
                         ${d.ereportingStatus || 'À Transmettre'}
@@ -773,8 +741,31 @@
         function transmitEReporting() {
             devisList.forEach(d => { d.ereportingStatus = 'Transmis'; });
             localStorage.setItem('dictadevis_data', JSON.stringify(devisList));
-            alert('Données d\'E-Reporting transmises au Portail Public (PPF) !');
+            alert('Données d\'E-Reporting télétransmises au Portail Public de Facturation (PPF) !');
             renderEReportingTable();
+        }
+
+        // EXPORT CSV NORME POUR LA COMPTABILITÉ & PORTAIL FISCAL
+        function downloadEReportingCSV() {
+            if (devisList.length === 0) {
+                alert("Aucun devis enregistré à exporter.");
+                return;
+            }
+
+            let csvContent = "data:text/csv;charset=utf-8,ID_Devis,Date,Client,Email,Montant_TTC,Statut_Fiscal\n";
+
+            devisList.forEach(d => {
+                const row = `${d.id},${d.date},"${d.client}",${d.email},"${d.total}",${d.ereportingStatus || 'A_Transmettre'}`;
+                csvContent += row + "\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `ereporting_export_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         renderItems();
