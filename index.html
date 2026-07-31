@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-    <title>Dicta'Devis — Le devis BTP à la voix</title>
+    <title>Dicta'Devis — Assistant vocal de création de devis</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -88,7 +88,7 @@
                 </div>
                 <div>
                     <span class="text-lg font-bold tracking-tight text-slate-900 block leading-none">Dicta<span class="text-brand-600">'Devis</span></span>
-                    <span class="text-[10px] text-slate-400 font-semibold tracking-wider uppercase">Assistant Vocal BTP</span>
+                    <span class="text-[10px] text-slate-400 font-semibold tracking-wider uppercase">ASSISTANT VOCAL DE CRÉATION DE DEVIS</span>
                 </div>
             </div>
             
@@ -109,7 +109,7 @@
 
             <div class="bg-white rounded-3xl p-5 sm:p-8 border border-slate-200/80 shadow-sm text-center flex flex-col items-center justify-center no-print relative overflow-hidden">
                 <div id="mic-status" class="text-slate-900 font-bold tracking-tight text-lg sm:text-xl mb-1">
-                    Appuyez et dictez votre chantier
+                    Appuyez et dictez votre devis
                 </div>
                 <p class="text-xs text-slate-500 max-w-sm mb-4">L'IA analyse vos paroles pour créer le devis immédiatement.</p>
 
@@ -259,7 +259,7 @@
         <!-- TAB 4: TARIFS & STRIPE -->
         <section id="tab-tarifs" class="tab-content hidden space-y-6 no-print">
             <div class="text-center max-w-xl mx-auto space-y-1">
-                <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Tarification Pro</h1>
+                <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Une offre claire</h1>
                 <p class="text-slate-500 text-xs">Testez gratuitement pendant 14 jours, puis souscrivez au plan Pro.</p>
             </div>
 
@@ -268,7 +268,7 @@
                     <div>
                         <span class="text-xs font-semibold px-2.5 py-1 bg-slate-100 text-slate-700 rounded-full">Essai Gratuit</span>
                         <div class="text-3xl font-extrabold text-slate-900 mt-3 mb-1">0 €</div>
-                        <p class="text-xs text-slate-500 mb-5">14 jours d'accès complet pour tester sur vos chantiers.</p>
+                        <p class="text-xs text-slate-500 mb-5">14 jours d'accès complet pour tester l'ensemble des fonctionnalités</p>
                         <ul class="space-y-2.5 text-xs text-slate-600">
                             <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> Dictée vocale illimitée</li>
                             <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> Exports PDF & E-mails</li>
@@ -410,8 +410,8 @@
     <script>
         lucide.createIcons();
 
-        // INTEGRATION STRIPE (Mettre votre vrai lien Stripe Payment Link ci-dessous quand vous l'aurez généré)
-        const YOUR_STRIPE_PAYMENT_LINK = ""; // Ex: "https://buy.stripe.com/abc123456"
+        // INTEGRATION STRIPE
+        const YOUR_STRIPE_PAYMENT_LINK = ""; // Collez votre lien Stripe Payment Link ici quand vous l'aurez généré
 
         function redirectToStripeCheckout() {
             if (YOUR_STRIPE_PAYMENT_LINK && YOUR_STRIPE_PAYMENT_LINK.trim() !== "") {
@@ -421,7 +421,7 @@
             }
         }
 
-        // ENVOI PAR EMAIL AVEC TELECHARGEMENT DE LA PIECE JOINTE
+        // ENVOI PAR EMAIL
         function exportEmailWithAttachment() {
             const client = document.getElementById('client-name').value || 'Client';
             const email = document.getElementById('client-email').value;
@@ -432,13 +432,10 @@
                 return;
             }
 
-            // 1. Déclencher l'impression/téléchargement du PDF
             downloadPDF();
 
-            // 2. Alerte guidant l'artisan
             alert(`1. Le devis PDF vient d'être téléchargé sur votre appareil.\n2. Votre application e-mail va s'ouvrir : pensez à Joindre le PDF téléchargé avant d'envoyer !`);
 
-            // 3. Ouvrir l'application email pré-remplie
             const subject = encodeURIComponent(`Votre Devis BTP — ${client}`);
             const body = encodeURIComponent(`Bonjour ${client},\n\nVeuillez trouver ci-joint votre devis BTP d'un montant de ${total}.\n\nRestant à votre entière disposition pour toute question,\n\nCordialement.`);
             
@@ -498,7 +495,7 @@
             items = [];
             renderItems();
             const status = document.getElementById('mic-status');
-            status.innerText = "Appuyez et dictez votre chantier";
+            status.innerText = "Appuyez et dictez votre devis";
             status.className = "text-slate-900 font-bold tracking-tight text-lg sm:text-xl mb-1";
         }
 
