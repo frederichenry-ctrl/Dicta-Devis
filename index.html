@@ -411,7 +411,7 @@
         lucide.createIcons();
 
         // INTEGRATION STRIPE
-        const YOUR_STRIPE_PAYMENT_LINK = ""; // Collez votre lien Stripe Payment Link ici quand vous l'aurez généré
+        const YOUR_STRIPE_PAYMENT_LINK = "";
 
         function redirectToStripeCheckout() {
             if (YOUR_STRIPE_PAYMENT_LINK && YOUR_STRIPE_PAYMENT_LINK.trim() !== "") {
@@ -700,7 +700,8 @@
                 email: document.getElementById('client-email').value || '',
                 total: totalTTC,
                 statut: statut,
-                ereportingStatus: 'À Transmettre'
+                ereportingStatus: 'À Transmettre',
+                items: JSON.parse(JSON.stringify(items))
             };
 
             devisList.unshift(newDevis);
@@ -727,8 +728,15 @@
                         <td class="p-3 font-bold text-slate-900">${d.client}</td>
                         <td class="p-3 font-extrabold text-emerald-600">${d.total}</td>
                         <td class="p-3 text-right space-x-1">
-                            <button onclick="relancerClientSMS(${index})" class="bg-brand-50 text-brand-700 hover:bg-brand-100 text-xs font-semibold px-2 py-1 rounded-lg transition inline-flex items-center gap-1">SMS</button>
-                            <button onclick="deleteDevis(${index})" class="bg-rose-50 text-rose-600 hover:bg-rose-100 text-xs font-semibold px-2 py-1 rounded-lg transition inline-flex"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                            <button onclick="downloadDevisFromList(${index})" class="bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold px-2 py-1 rounded-lg transition inline-flex items-center gap-1">
+                                <i data-lucide="file-text" class="w-3.5 h-3.5 text-slate-600"></i> PDF
+                            </button>
+                            <button onclick="relancerClientSMS(${index})" class="bg-brand-50 text-brand-700 hover:bg-brand-100 text-xs font-semibold px-2 py-1 rounded-lg transition inline-flex items-center gap-1">
+                                <i data-lucide="smartphone" class="w-3.5 h-3.5"></i> SMS
+                            </button>
+                            <button onclick="deleteDevis(${index})" class="bg-rose-50 text-rose-600 hover:bg-rose-100 text-xs font-semibold px-2 py-1 rounded-lg transition inline-flex">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            </button>
                         </td>
                     `;
                     body.appendChild(row);
@@ -738,6 +746,20 @@
             document.getElementById('stat-total-count').innerText = devisList.length;
             document.getElementById('stat-signed-amount').innerText = signedAmount.toFixed(2) + ' €';
             lucide.createIcons();
+        }
+
+        function downloadDevisFromList(index) {
+            const devis = devisList[index];
+            if (devis) {
+                document.getElementById('client-name').value = devis.client || '';
+                document.getElementById('client-phone').value = devis.phone || '';
+                document.getElementById('client-email').value = devis.email || '';
+                if (devis.items && devis.items.length > 0) {
+                    items = JSON.parse(JSON.stringify(devis.items));
+                    renderItems();
+                }
+                downloadPDF();
+            }
         }
 
         function deleteDevis(index) {
@@ -750,8 +772,15 @@
 
         function relancerClientSMS(index) {
             const devis = devisList[index];
-            const msg = encodeURIComponent(`Bonjour ${devis.client}, je vous relance concernant le devis BTP d'un montant de ${devis.total}. Restant à votre disposition si besoin !`);
-            window.open(`sms:${devis.phone}?body=${msg}`, '_blank');
+            const cleanPhone = (devis.phone || '').replace(/\s+/g, '');
+            
+            if (!cleanPhone) {
+                alert("Aucun numéro de téléphone n'a été renseigné pour ce client.");
+                return;
+            }
+
+            const msg = encodeURIComponent(`Bonjour ${devis.client}, je vous relance concernant votre devis BTP d'un montant de ${devis.total}. Avez-vous pu le consulter ? Restant à votre disposition si besoin !`);
+            window.location.href = `sms:${cleanPhone}?body=${msg}`;
         }
 
         function renderEReportingTable() {
