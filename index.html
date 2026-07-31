@@ -411,12 +411,14 @@
         lucide.createIcons();
 
         // INTEGRATION STRIPE
-        const https://buy.stripe.com/28E9AT0x19KTgfF0tFbfO00 = "";
+        const stripeCheckoutUrl = "https://buy.stripe.com/28E9AT0x19KTgfF0tFbfO00";
 
         function redirectToStripeCheckout() {
-            if (https://buy.stripe.com/28E9AT0x19KTgfF0tFbfO00 && https://buy.stripe.com/28E9AT0x19KTgfF0tFbfO00.trim() !== "") {
-                window.location.href = https://buy.stripe.com/28E9AT0x19KTgfF0tFbfO00;
-            } else 
+            if (stripeCheckoutUrl && stripeCheckoutUrl.trim() !== "") {
+                window.location.href = stripeCheckoutUrl;
+            } else {
+                alert("Le lien de paiement Stripe n'est pas configuré.");
+            }
         }
 
         // ENVOI PAR EMAIL
@@ -432,7 +434,7 @@
 
             downloadPDF();
 
-            alert(`1. Le devis PDF vient d'être téléchargé sur votre appareil.\n2. Votre application e-mail va s'ouvrir : pensez à Joindre le PDF téléchargé avant d'envoyer !`);
+            alert(`1. Le devis PDF vient d'être téléchargé sur votre appareil.\n2. Votre application e-mail va s'ouvrir : pensez à joindre le PDF téléchargé avant d'envoyer !`);
 
             const subject = encodeURIComponent(`Votre Devis BTP — ${client}`);
             const body = encodeURIComponent(`Bonjour ${client},\n\nVeuillez trouver ci-joint votre devis BTP d'un montant de ${total}.\n\nRestant à votre entière disposition pour toute question,\n\nCordialement.`);
