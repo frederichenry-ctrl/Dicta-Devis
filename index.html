@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr" class="h-full bg-slate-50">
+<html lang="fr" class="h-full bg-slate-100">
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-    <title>Dicta'Devis — Assistant vocal de création de devis</title>
+    <title>Dicta'Devis — Assistant vocal de création de devis BTP</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,13 +22,12 @@
                         sans: ['Plus Jakarta Sans', 'sans-serif'],
                     },
                     colors: {
-                        brand: {
-                            50: '#eef2ff',
-                            100: '#e0e7ff',
-                            500: '#6366f1',
-                            600: '#4f46e5',
-                            700: '#4338ca',
-                            900: '#1e1b4b',
+                        btp: {
+                            navy: '#1e3a8a',      // Bleu de travail / Marine pro
+                            navyDark: '#0f172a',  // Ardoise / Sombre
+                            amber: '#f59e0b',     // Jaune/Orange Chantier
+                            amberHover: '#d97706',
+                            lightBg: '#f1f5f9',   // Gris acier très clair
                         }
                     }
                 }
@@ -39,7 +38,7 @@
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #f8fafc;
+            background-color: #f1f5f9;
             color: #0f172a;
             -webkit-font-smoothing: antialiased;
             -webkit-tap-highlight-color: transparent;
@@ -50,7 +49,7 @@
         }
 
         @keyframes pulse-ring {
-            0% { transform: scale(0.96); box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.5); }
+            0% { transform: scale(0.96); box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.6); }
             70% { transform: scale(1.03); box-shadow: 0 0 0 18px rgba(225, 29, 72, 0); }
             100% { transform: scale(0.96); box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); }
         }
@@ -70,34 +69,34 @@
         }
     </style>
 </head>
-<body class="min-h-full flex flex-col justify-between bg-slate-50 text-slate-900 pb-20 sm:pb-8">
+<body class="min-h-full flex flex-col justify-between bg-slate-100 text-slate-900 pb-20 sm:pb-8">
 
     <!-- BANNIÈRE ESSAI GRATUIT 14 JOURS -->
-    <div id="trial-banner" class="bg-indigo-900 text-white px-4 py-2 text-xs font-medium text-center flex items-center justify-center gap-2 no-print">
-        <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+    <div id="trial-banner" class="bg-slate-900 text-white px-4 py-2 text-xs font-medium text-center flex items-center justify-center gap-2 no-print">
+        <span class="inline-block w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
         <span id="trial-text">Période d'essai 14 jours active</span>
-        <button onclick="showTab('tarifs')" class="ml-2 bg-indigo-800 hover:bg-indigo-700 text-indigo-100 px-2.5 py-0.5 rounded-full font-semibold transition text-[11px]">Passer en Pro</button>
+        <button onclick="showTab('tarifs')" class="ml-2 bg-amber-500 hover:bg-amber-600 text-slate-950 px-2.5 py-0.5 rounded-full font-bold transition text-[11px]">Passer en Pro</button>
     </div>
 
     <!-- EN-TÊTE -->
-    <header class="bg-white/80 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-40 no-print">
+    <header class="bg-white/90 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 no-print">
         <div class="max-w-4xl mx-auto flex items-center justify-between px-4 py-3">
             <div class="flex items-center gap-2.5 cursor-pointer" onclick="showTab('app')">
-                <div class="w-9 h-9 rounded-xl bg-brand-600 flex items-center justify-center text-white font-extrabold text-base shadow-sm shadow-brand-500/30">
+                <div class="w-9 h-9 rounded-xl bg-btp-navy flex items-center justify-center text-amber-500 font-extrabold text-base shadow-sm">
                     <i data-lucide="mic" class="w-5 h-5"></i>
                 </div>
                 <div>
-                    <span class="text-lg font-bold tracking-tight text-slate-900 block leading-none">Dicta<span class="text-brand-600">'Devis</span></span>
-                    <span class="text-[10px] text-slate-400 font-semibold tracking-wider uppercase">ASSISTANT VOCAL DE CRÉATION DE DEVIS</span>
+                    <span class="text-lg font-extrabold tracking-tight text-slate-900 block leading-none">Dicta<span class="text-amber-600">'Devis</span></span>
+                    <span class="text-[10px] text-slate-500 font-bold tracking-wider uppercase">ASSISTANT VOCAL DE CRÉATION DE DEVIS</span>
                 </div>
             </div>
             
             <nav class="hidden sm:flex items-center gap-1">
-                <button onclick="showTab('app')" id="nav-app-desktop" class="nav-btn-desktop px-3.5 py-2 rounded-xl text-xs font-semibold transition bg-brand-600 text-white shadow-sm">Dictée</button>
-                <button onclick="showTab('admin')" id="nav-admin-desktop" class="nav-btn-desktop px-3.5 py-2 rounded-xl text-xs font-medium transition text-slate-600 hover:bg-slate-100">Mes Devis</button>
-                <button onclick="showTab('ereporting')" id="nav-ereporting-desktop" class="nav-btn-desktop px-3.5 py-2 rounded-xl text-xs font-medium transition text-slate-600 hover:bg-slate-100">E-Reporting</button>
-                <button onclick="showTab('tarifs')" id="nav-tarifs-desktop" class="nav-btn-desktop px-3.5 py-2 rounded-xl text-xs font-semibold transition text-emerald-700 bg-emerald-50">Tarifs</button>
-                <button onclick="showTab('settings')" id="nav-settings-desktop" class="nav-btn-desktop px-3.5 py-2 rounded-xl text-xs font-medium transition text-slate-600 hover:bg-slate-100">Profil</button>
+                <button onclick="showTab('app')" id="nav-app-desktop" class="nav-btn-desktop px-3.5 py-2 rounded-xl text-xs font-bold transition bg-btp-navy text-white shadow-sm">Dictée</button>
+                <button onclick="showTab('admin')" id="nav-admin-desktop" class="nav-btn-desktop px-3.5 py-2 rounded-xl text-xs font-semibold transition text-slate-600 hover:bg-slate-100">Mes Devis</button>
+                <button onclick="showTab('ereporting')" id="nav-ereporting-desktop" class="nav-btn-desktop px-3.5 py-2 rounded-xl text-xs font-semibold transition text-slate-600 hover:bg-slate-100">E-Reporting</button>
+                <button onclick="showTab('tarifs')" id="nav-tarifs-desktop" class="nav-btn-desktop px-3.5 py-2 rounded-xl text-xs font-bold transition text-amber-700 bg-amber-50 border border-amber-200/60">Tarifs</button>
+                <button onclick="showTab('settings')" id="nav-settings-desktop" class="nav-btn-desktop px-3.5 py-2 rounded-xl text-xs font-semibold transition text-slate-600 hover:bg-slate-100">Profil</button>
             </nav>
         </div>
     </header>
@@ -107,56 +106,57 @@
         <!-- TAB 1: DICTÉE & DEVIS -->
         <section id="tab-app" class="tab-content space-y-5">
 
-            <div class="bg-white rounded-3xl p-5 sm:p-8 border border-slate-200/80 shadow-sm text-center flex flex-col items-center justify-center no-print relative overflow-hidden">
-                <div id="mic-status" class="text-slate-900 font-bold tracking-tight text-lg sm:text-xl mb-1">
+            <div class="bg-white rounded-3xl p-5 sm:p-8 border border-slate-200 shadow-sm text-center flex flex-col items-center justify-center no-print relative overflow-hidden">
+                <div id="mic-status" class="text-slate-900 font-extrabold tracking-tight text-lg sm:text-xl mb-1">
                     Appuyez et dictez votre devis
                 </div>
-                <p class="text-xs text-slate-500 max-w-sm mb-4">L'IA analyse vos paroles pour créer le devis immédiatement.</p>
+                <p class="text-xs text-slate-500 max-w-sm mb-4 font-medium">L'IA analyse vos paroles pour créer le devis immédiatement.</p>
 
-                <button id="mic-btn" onclick="toggleRecording()" class="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-brand-600 text-white flex items-center justify-center shadow-lg shadow-brand-600/30 hover:bg-brand-700 transition transform active:scale-95 my-1">
+                <!-- Bouton Micro Ambre Chantier -->
+                <button id="mic-btn" onclick="toggleRecording()" class="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-amber-500 text-slate-950 flex items-center justify-center shadow-lg shadow-amber-500/30 hover:bg-amber-600 transition transform active:scale-95 my-1 border-4 border-amber-400/30">
                     <i data-lucide="mic" id="mic-icon" class="w-10 h-10 sm:w-12 sm:h-12"></i>
                 </button>
 
-                <div id="timer" class="hidden mt-3 font-mono font-semibold text-xs text-rose-600 bg-rose-50 px-3 py-1 rounded-full border border-rose-200">
+                <div id="timer" class="hidden mt-3 font-mono font-bold text-xs text-rose-600 bg-rose-50 px-3 py-1 rounded-full border border-rose-200">
                     00:00
                 </div>
 
-                <button onclick="loadDemoData()" class="mt-4 inline-flex items-center gap-1.5 text-xs text-brand-600 font-semibold bg-brand-50 hover:bg-brand-100 px-3 py-1.5 rounded-full transition border border-brand-100">
-                    <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Injecter un exemple de devis (Test artisan)
+                <button onclick="loadDemoData()" class="mt-4 inline-flex items-center gap-1.5 text-xs text-slate-800 font-bold bg-slate-100 hover:bg-slate-200 px-3.5 py-2 rounded-full transition border border-slate-200">
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-600"></i> Injecter un exemple de devis (Test artisan)
                 </button>
             </div>
 
-            <div id="editor-section" class="bg-white rounded-3xl border border-slate-200/80 shadow-sm p-5 sm:p-6 space-y-5">
+            <div id="editor-section" class="bg-white rounded-3xl border border-slate-200 shadow-sm p-5 sm:p-6 space-y-5">
                 
                 <div class="flex items-center justify-between border-b border-slate-100 pb-3.5 no-print">
                     <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
-                        <i data-lucide="file-text" class="w-4 h-4 text-brand-600"></i>
+                        <i data-lucide="file-text" class="w-4 h-4 text-btp-navy"></i>
                         Contenu du Devis
                     </h2>
-                    <span class="text-[11px] font-semibold px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200/80 rounded-full flex items-center gap-1">
-                        <i data-lucide="shield-check" class="w-3 h-3"></i> Factur-X Ready
+                    <span class="text-[11px] font-bold px-2.5 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-full flex items-center gap-1">
+                        <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Factur-X Ready
                     </span>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 no-print">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1">Nom Client</label>
-                        <input type="text" id="client-name" placeholder="ex: Jean Dupont" class="w-full bg-slate-50 border border-slate-200/80 rounded-xl px-3 py-2 text-sm font-medium focus:border-brand-600 focus:bg-white focus:outline-none transition">
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Nom Client</label>
+                        <input type="text" id="client-name" placeholder="ex: Jean Dupont" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold focus:border-btp-navy focus:bg-white focus:outline-none transition">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1">Téléphone Client</label>
-                        <input type="tel" id="client-phone" placeholder="ex: 06 12 34 56 78" class="w-full bg-slate-50 border border-slate-200/80 rounded-xl px-3 py-2 text-sm font-medium focus:border-brand-600 focus:bg-white focus:outline-none transition">
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Téléphone Client</label>
+                        <input type="tel" id="client-phone" placeholder="ex: 06 12 34 56 78" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold focus:border-btp-navy focus:bg-white focus:outline-none transition">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1">Email Client</label>
-                        <input type="email" id="client-email" placeholder="client@email.com" class="w-full bg-slate-50 border border-slate-200/80 rounded-xl px-3 py-2 text-sm font-medium focus:border-brand-600 focus:bg-white focus:outline-none transition">
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Email Client</label>
+                        <input type="email" id="client-email" placeholder="client@email.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold focus:border-btp-navy focus:bg-white focus:outline-none transition">
                     </div>
                 </div>
 
                 <div class="no-print">
                     <div class="flex items-center justify-between mb-2">
-                        <label class="block text-xs font-semibold text-slate-500">Lignes de prestations</label>
-                        <button onclick="addLine()" class="text-xs font-semibold text-brand-600 hover:text-brand-700 flex items-center gap-1 transition">
+                        <label class="block text-xs font-bold text-slate-600">Lignes de prestations</label>
+                        <button onclick="addLine()" class="text-xs font-bold text-btp-navy hover:text-blue-900 flex items-center gap-1 transition">
                             <i data-lucide="plus" class="w-3.5 h-3.5"></i> Ajouter une ligne
                         </button>
                     </div>
@@ -166,29 +166,29 @@
                 <div class="bg-slate-900 text-white rounded-2xl p-4 space-y-2 no-print">
                     <div class="flex justify-between text-xs text-slate-400">
                         <span>Total HT</span>
-                        <span class="font-medium text-slate-200" id="total-ht">0.00 €</span>
+                        <span class="font-semibold text-slate-200" id="total-ht">0.00 €</span>
                     </div>
                     <div class="flex justify-between text-xs text-slate-400">
                         <span>TVA</span>
-                        <span class="font-medium text-slate-200" id="total-tva">0.00 €</span>
+                        <span class="font-semibold text-slate-200" id="total-tva">0.00 €</span>
                     </div>
-                    <div class="border-t border-slate-800 pt-2 flex justify-between text-lg font-bold">
+                    <div class="border-t border-slate-800 pt-2 flex justify-between text-lg font-extrabold">
                         <span>TOTAL TTC</span>
-                        <span class="text-emerald-400 font-extrabold" id="total-ttc">0.00 €</span>
+                        <span class="text-amber-400 font-extrabold" id="total-ttc">0.00 €</span>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-3 gap-2 pt-1 no-print">
-                    <button onclick="downloadPDF()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold py-2.5 px-2 rounded-xl transition flex items-center justify-center gap-1.5 text-xs">
+                    <button onclick="downloadPDF()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 px-2 rounded-xl transition flex items-center justify-center gap-1.5 text-xs">
                         <i data-lucide="download" class="w-4 h-4 text-slate-600"></i>
                         <span>PDF</span>
                     </button>
-                    <button onclick="exportEmailWithAttachment()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold py-2.5 px-2 rounded-xl transition flex items-center justify-center gap-1.5 text-xs">
+                    <button onclick="exportEmailWithAttachment()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 px-2 rounded-xl transition flex items-center justify-center gap-1.5 text-xs">
                         <i data-lucide="mail" class="w-4 h-4 text-slate-600"></i>
                         <span>Email</span>
                     </button>
-                    <button onclick="saveDevis('Enregistré')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-2 rounded-xl transition flex items-center justify-center gap-1.5 text-xs shadow-sm">
-                        <i data-lucide="check" class="w-4 h-4"></i>
+                    <button onclick="saveDevis('Enregistré')" class="bg-btp-navy hover:bg-blue-900 text-white font-extrabold py-2.5 px-2 rounded-xl transition flex items-center justify-center gap-1.5 text-xs shadow-sm">
+                        <i data-lucide="check" class="w-4 h-4 text-amber-400"></i>
                         <span>Enregistrer</span>
                     </button>
                 </div>
@@ -199,28 +199,28 @@
         <!-- TAB 2: MES DEVIS -->
         <section id="tab-admin" class="tab-content hidden space-y-5 no-print">
             <div class="flex items-center justify-between">
-                <h1 class="text-xl font-bold tracking-tight text-slate-900">Mes Devis Enregistrés</h1>
-                <button onclick="resetForm(); showTab('app');" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm">
+                <h1 class="text-xl font-extrabold tracking-tight text-slate-900">Mes Devis Enregistrés</h1>
+                <button onclick="resetForm(); showTab('app');" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm">
                     <i data-lucide="plus" class="w-4 h-4"></i> Nouveau Devis
                 </button>
             </div>
 
             <div class="grid grid-cols-2 gap-3">
-                <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm">
-                    <div class="text-xs font-medium text-slate-400 mb-1">Nombre de Devis</div>
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                    <div class="text-xs font-bold text-slate-400 mb-1">Nombre de Devis</div>
                     <div class="text-2xl font-extrabold text-slate-900" id="stat-total-count">0</div>
                 </div>
-                <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm">
-                    <div class="text-xs font-medium text-slate-400 mb-1">Total Général</div>
-                    <div class="text-2xl font-extrabold text-brand-600" id="stat-signed-amount">0.00 €</div>
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                    <div class="text-xs font-bold text-slate-400 mb-1">Total Général</div>
+                    <div class="text-2xl font-extrabold text-btp-navy" id="stat-signed-amount">0.00 €</div>
                 </div>
             </div>
 
-            <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-slate-50 border-b border-slate-200/80 text-xs font-semibold text-slate-500">
+                            <tr class="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
                                 <th class="p-3.5">Date</th>
                                 <th class="p-3.5">Client</th>
                                 <th class="p-3.5">Montant TTC</th>
@@ -237,18 +237,18 @@
         <section id="tab-ereporting" class="tab-content hidden space-y-5 no-print">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
-                    <h1 class="text-xl font-bold text-slate-900">Module E-Reporting Fiscal</h1>
-                    <p class="text-slate-500 text-xs">Déclarations d'encaissements B2C et export PPF / PDP.</p>
+                    <h1 class="text-xl font-extrabold text-slate-900">Module E-Reporting Fiscal</h1>
+                    <p class="text-slate-500 text-xs font-medium">Déclarations d'encaissements B2C et export PPF / PDP.</p>
                 </div>
-                <button onclick="downloadEReportingCSV()" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs px-3.5 py-2 rounded-xl transition flex items-center justify-center gap-2 shadow-sm">
-                    <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-400"></i> Exporter CSV
+                <button onclick="downloadEReportingCSV()" class="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-3.5 py-2 rounded-xl transition flex items-center justify-center gap-2 shadow-sm">
+                    <i data-lucide="file-spreadsheet" class="w-4 h-4 text-amber-400"></i> Exporter CSV
                 </button>
             </div>
 
-            <div class="bg-white rounded-3xl border border-slate-200/80 shadow-sm p-5 space-y-4">
+            <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-5 space-y-4">
                 <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                     <h2 class="text-sm font-bold text-slate-900">Transactions B2C</h2>
-                    <button onclick="transmitEReporting()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs px-3 py-1.5 rounded-xl transition flex items-center gap-1.5">
+                    <button onclick="transmitEReporting()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3 py-1.5 rounded-xl transition flex items-center gap-1.5">
                         <i data-lucide="send" class="w-3.5 h-3.5"></i> Télétransmettre PPF
                     </button>
                 </div>
@@ -260,39 +260,39 @@
         <section id="tab-tarifs" class="tab-content hidden space-y-6 no-print">
             <div class="text-center max-w-xl mx-auto space-y-1">
                 <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Une offre claire</h1>
-                <p class="text-slate-500 text-xs">Testez gratuitement pendant 14 jours, puis souscrivez au plan Pro.</p>
+                <p class="text-slate-500 text-xs font-medium">Testez gratuitement pendant 14 jours, puis souscrivez au plan Pro.</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-3xl mx-auto">
-                <div class="bg-white rounded-3xl border border-slate-200/80 p-6 flex flex-col justify-between shadow-sm">
+                <div class="bg-white rounded-3xl border border-slate-200 p-6 flex flex-col justify-between shadow-sm">
                     <div>
-                        <span class="text-xs font-semibold px-2.5 py-1 bg-slate-100 text-slate-700 rounded-full">Essai Gratuit</span>
+                        <span class="text-xs font-bold px-2.5 py-1 bg-slate-100 text-slate-700 rounded-full">Essai Gratuit</span>
                         <div class="text-3xl font-extrabold text-slate-900 mt-3 mb-1">0 €</div>
-                        <p class="text-xs text-slate-500 mb-5">14 jours d'accès complet pour tester l'ensemble des fonctionnalités</p>
-                        <ul class="space-y-2.5 text-xs text-slate-600">
+                        <p class="text-xs text-slate-500 mb-5 font-medium">14 jours d'accès complet pour tester l'ensemble des fonctionnalités</p>
+                        <ul class="space-y-2.5 text-xs text-slate-600 font-semibold">
                             <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> Dictée vocale illimitée</li>
                             <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> Exports PDF & E-mails</li>
                             <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> Sans carte bancaire</li>
                         </ul>
                     </div>
-                    <button class="mt-6 w-full bg-slate-100 text-slate-600 font-semibold py-2.5 rounded-xl text-xs cursor-default">Plan Actuel (Essai)</button>
+                    <button class="mt-6 w-full bg-slate-100 text-slate-500 font-bold py-2.5 rounded-xl text-xs cursor-default">Plan Actuel (Essai)</button>
                 </div>
 
-                <div class="bg-white rounded-3xl border-2 border-brand-600 p-6 flex flex-col justify-between relative shadow-md">
-                    <span class="absolute -top-3 right-5 text-[11px] font-bold px-3 py-0.5 bg-brand-600 text-white rounded-full">Recommandé</span>
+                <div class="bg-white rounded-3xl border-2 border-amber-500 p-6 flex flex-col justify-between relative shadow-md">
+                    <span class="absolute -top-3 right-5 text-[11px] font-bold px-3 py-0.5 bg-amber-500 text-slate-950 rounded-full">Recommandé</span>
                     <div>
-                        <span class="text-xs font-semibold px-2.5 py-1 bg-brand-50 text-brand-700 rounded-full">Pro BTP</span>
+                        <span class="text-xs font-bold px-2.5 py-1 bg-amber-50 text-amber-800 rounded-full border border-amber-200/60">Pro BTP</span>
                         <div class="text-3xl font-extrabold text-slate-900 mt-3 mb-1">29 € <span class="text-xs font-normal text-slate-500">/ mois</span></div>
-                        <p class="text-xs text-slate-500 mb-5">Sans engagement. Rentabilisé au 1er devis signé.</p>
-                        <ul class="space-y-2.5 text-xs text-slate-600">
-                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> <strong>Devis vocaux illimités</strong></li>
-                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> Factur-X & E-Reporting fiscal</li>
-                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> Relances SMS & Support prioritaire</li>
+                        <p class="text-xs text-slate-500 mb-5 font-medium">Sans engagement. Rentabilisé au 1er devis signé.</p>
+                        <ul class="space-y-2.5 text-xs text-slate-700 font-semibold">
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-amber-600"></i> <strong>Devis vocaux illimités</strong></li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-amber-600"></i> Factur-X & E-Reporting fiscal</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-amber-600"></i> Relances SMS & Support prioritaire</li>
                         </ul>
                     </div>
                     
-                    <button onclick="redirectToStripeCheckout()" class="mt-6 w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 rounded-xl transition shadow-md shadow-brand-500/20 text-xs flex items-center justify-center gap-2">
-                        <i data-lucide="credit-card" class="w-4 h-4"></i> Activer le Plan Pro (29 €/mois)
+                    <button onclick="redirectToStripeCheckout()" class="mt-6 w-full bg-btp-navy hover:bg-blue-900 text-white font-extrabold py-3 rounded-xl transition shadow-md text-xs flex items-center justify-center gap-2">
+                        <i data-lucide="credit-card" class="w-4 h-4 text-amber-400"></i> Activer le Plan Pro (29 €/mois)
                     </button>
                 </div>
             </div>
@@ -301,30 +301,30 @@
         <!-- TAB 5: PROFIL -->
         <section id="tab-settings" class="tab-content hidden space-y-5 no-print">
             <div>
-                <h1 class="text-xl font-bold text-slate-900">Profil Artisan</h1>
-                <p class="text-slate-500 text-xs">Informations injectées dans vos devis officiels.</p>
+                <h1 class="text-xl font-extrabold text-slate-900">Profil Artisan</h1>
+                <p class="text-slate-500 text-xs font-medium">Informations injectées dans vos devis officiels.</p>
             </div>
 
-            <div class="bg-white rounded-3xl border border-slate-200/80 shadow-sm p-5 space-y-4">
+            <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-5 space-y-4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1">Raison Sociale</label>
-                        <input type="text" id="company-name" value="ElecPro Mayenne SARL" class="w-full bg-slate-50 border border-slate-200/80 rounded-xl px-3 py-2 text-sm text-slate-900">
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Raison Sociale</label>
+                        <input type="text" id="company-name" value="ElecPro Mayenne SARL" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 font-semibold">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1">SIRET</label>
-                        <input type="text" id="company-siret" value="89234567800012" class="w-full bg-slate-50 border border-slate-200/80 rounded-xl px-3 py-2 text-sm text-slate-900">
+                        <label class="block text-xs font-bold text-slate-600 mb-1">SIRET</label>
+                        <input type="text" id="company-siret" value="89234567800012" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 font-semibold">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1">Assureur Décennale</label>
-                        <input type="text" id="insurance-name" value="AXA France BTP" class="w-full bg-slate-50 border border-slate-200/80 rounded-xl px-3 py-2 text-sm text-slate-900">
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Assureur Décennale</label>
+                        <input type="text" id="insurance-name" value="AXA France BTP" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 font-semibold">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1">N° Contrat Décennale</label>
-                        <input type="text" id="insurance-num" value="DEC-2026-99482" class="w-full bg-slate-50 border border-slate-200/80 rounded-xl px-3 py-2 text-sm text-slate-900">
+                        <label class="block text-xs font-bold text-slate-600 mb-1">N° Contrat Décennale</label>
+                        <input type="text" id="insurance-num" value="DEC-2026-99482" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 font-semibold">
                     </div>
                 </div>
-                <button onclick="alert('Paramètres enregistrés !')" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs px-4 py-2 rounded-xl transition shadow-sm">
+                <button onclick="alert('Paramètres enregistrés !')" class="bg-btp-navy hover:bg-blue-900 text-white font-bold text-xs px-4 py-2 rounded-xl transition shadow-sm">
                     Enregistrer les paramètres
                 </button>
             </div>
@@ -333,27 +333,27 @@
     </main>
 
     <!-- TAB BAR MOBILE -->
-    <div class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200/80 px-2 py-1.5 z-50 sm:hidden no-print">
+    <div class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 px-2 py-1.5 z-50 sm:hidden no-print">
         <div class="flex items-center justify-around">
-            <button onclick="showTab('app')" id="tab-btn-app" class="flex flex-col items-center gap-0.5 text-brand-600 py-1 px-3 rounded-xl">
+            <button onclick="showTab('app')" id="tab-btn-app" class="flex flex-col items-center gap-0.5 text-btp-navy py-1 px-3 rounded-xl">
                 <i data-lucide="mic" class="w-5 h-5"></i>
-                <span class="text-[10px] font-semibold">Dictée</span>
+                <span class="text-[10px] font-bold">Dictée</span>
             </button>
             <button onclick="showTab('admin')" id="tab-btn-admin" class="flex flex-col items-center gap-0.5 text-slate-400 py-1 px-3 rounded-xl">
                 <i data-lucide="folder" class="w-5 h-5"></i>
-                <span class="text-[10px] font-semibold">Devis</span>
+                <span class="text-[10px] font-bold">Devis</span>
             </button>
             <button onclick="showTab('ereporting')" id="tab-btn-ereporting" class="flex flex-col items-center gap-0.5 text-slate-400 py-1 px-3 rounded-xl">
                 <i data-lucide="file-check-2" class="w-5 h-5"></i>
-                <span class="text-[10px] font-semibold">Fiscal</span>
+                <span class="text-[10px] font-bold">Fiscal</span>
             </button>
             <button onclick="showTab('tarifs')" id="tab-btn-tarifs" class="flex flex-col items-center gap-0.5 text-slate-400 py-1 px-3 rounded-xl">
                 <i data-lucide="zap" class="w-5 h-5"></i>
-                <span class="text-[10px] font-semibold">Pro</span>
+                <span class="text-[10px] font-bold">Pro</span>
             </button>
             <button onclick="showTab('settings')" id="tab-btn-settings" class="flex flex-col items-center gap-0.5 text-slate-400 py-1 px-3 rounded-xl">
                 <i data-lucide="user" class="w-5 h-5"></i>
-                <span class="text-[10px] font-semibold">Profil</span>
+                <span class="text-[10px] font-bold">Profil</span>
             </button>
         </div>
     </div>
@@ -367,7 +367,7 @@
                 <p class="text-xs text-slate-600" id="pdf-insurance">Décennale : -</p>
             </div>
             <div class="text-right">
-                <h2 class="text-xl font-black text-brand-600 uppercase">Devis BTP (Factur-X)</h2>
+                <h2 class="text-xl font-black text-btp-navy uppercase">Devis BTP (Factur-X)</h2>
                 <p class="text-xs text-slate-500" id="pdf-date">Date : -</p>
             </div>
         </div>
@@ -396,7 +396,7 @@
             <div class="w-1/2 space-y-2 text-xs">
                 <div class="flex justify-between text-slate-600"><span>Total HT :</span><span id="pdf-total-ht">0.00 €</span></div>
                 <div class="flex justify-between text-slate-600"><span>TVA :</span><span id="pdf-total-tva">0.00 €</span></div>
-                <div class="flex justify-between font-bold text-base border-t border-slate-300 pt-2 text-slate-900"><span>TOTAL TTC :</span><span id="pdf-total-ttc" class="text-brand-600">0.00 €</span></div>
+                <div class="flex justify-between font-bold text-base border-t border-slate-300 pt-2 text-slate-900"><span>TOTAL TTC :</span><span id="pdf-total-ttc" class="text-amber-600">0.00 €</span></div>
             </div>
         </div>
 
@@ -496,7 +496,7 @@
             renderItems();
             const status = document.getElementById('mic-status');
             status.innerText = "Appuyez et dictez votre devis";
-            status.className = "text-slate-900 font-bold tracking-tight text-lg sm:text-xl mb-1";
+            status.className = "text-slate-900 font-extrabold tracking-tight text-lg sm:text-xl mb-1";
         }
 
         function renderItems() {
@@ -516,23 +516,23 @@
                     totalTVA += itemTVA;
 
                     const row = document.createElement('div');
-                    row.className = 'bg-slate-50 p-2.5 rounded-2xl border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center gap-2';
+                    row.className = 'bg-slate-50 p-2.5 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center gap-2';
                     row.innerHTML = `
-                        <input type="text" value="${item.designation || ''}" onchange="updateItem(${index}, 'designation', this.value)" placeholder="Prestation" class="flex-1 bg-white border border-slate-200/80 rounded-xl px-3 py-1.5 text-sm font-medium focus:outline-none focus:border-brand-600 w-full">
+                        <input type="text" value="${item.designation || ''}" onchange="updateItem(${index}, 'designation', this.value)" placeholder="Prestation" class="flex-1 bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-sm font-semibold focus:outline-none focus:border-btp-navy w-full">
                         
                         <div class="flex items-center gap-2 w-full sm:w-auto">
                             <div class="flex items-center gap-1">
-                                <span class="text-[11px] text-slate-400">Qté:</span>
-                                <input type="number" value="${item.quantite || 1}" onchange="updateItem(${index}, 'quantite', parseFloat(this.value))" class="w-14 bg-white border border-slate-200/80 rounded-xl px-2 py-1.5 text-sm font-medium text-center focus:outline-none">
+                                <span class="text-[11px] text-slate-400 font-bold">Qté:</span>
+                                <input type="number" value="${item.quantite || 1}" onchange="updateItem(${index}, 'quantite', parseFloat(this.value))" class="w-14 bg-white border border-slate-200 rounded-xl px-2 py-1.5 text-sm font-semibold text-center focus:outline-none">
                             </div>
 
                             <div class="flex items-center gap-1">
-                                <span class="text-[11px] text-slate-400">HT:</span>
-                                <input type="number" value="${item.prix || 0}" onchange="updateItem(${index}, 'prix', parseFloat(this.value))" class="w-20 bg-white border border-slate-200/80 rounded-xl px-2 py-1.5 text-sm font-medium text-right focus:outline-none">
+                                <span class="text-[11px] text-slate-400 font-bold">HT:</span>
+                                <input type="number" value="${item.prix || 0}" onchange="updateItem(${index}, 'prix', parseFloat(this.value))" class="w-20 bg-white border border-slate-200 rounded-xl px-2 py-1.5 text-sm font-semibold text-right focus:outline-none">
                                 <span class="text-xs text-slate-400">€</span>
                             </div>
 
-                            <select onchange="updateItem(${index}, 'tva', parseFloat(this.value))" class="bg-white border border-slate-200/80 rounded-xl px-2 py-1.5 text-xs font-semibold focus:outline-none">
+                            <select onchange="updateItem(${index}, 'tva', parseFloat(this.value))" class="bg-white border border-slate-200 rounded-xl px-2 py-1.5 text-xs font-bold focus:outline-none">
                                 <option value="5.5" ${item.tva === 5.5 ? 'selected' : ''}>5.5%</option>
                                 <option value="10" ${item.tva === 10 ? 'selected' : ''}>10%</option>
                                 <option value="20" ${item.tva === 20 ? 'selected' : ''}>20%</option>
@@ -609,7 +609,7 @@
                     mediaRecorder.onstop = async () => {
                         const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
                         status.innerText = "Analyse IA en cours...";
-                        status.className = "text-brand-600 font-bold tracking-tight text-lg sm:text-xl mb-1";
+                        status.className = "text-btp-navy font-extrabold tracking-tight text-lg sm:text-xl mb-1";
 
                         try {
                             const response = await fetch('/api/transcribe', { method: 'POST', headers: { 'Content-Type': 'audio/webm' }, body: audioBlob });
@@ -618,7 +618,7 @@
                                 if (result.data.clientName && result.data.clientName !== "Inconnu") document.getElementById('client-name').value = result.data.clientName;
                                 if (result.data.items && result.data.items.length > 0) { items = result.data.items; renderItems(); }
                                 status.innerText = "Devis prêt !";
-                                status.className = "text-emerald-600 font-bold tracking-tight text-lg sm:text-xl mb-1";
+                                status.className = "text-emerald-700 font-extrabold tracking-tight text-lg sm:text-xl mb-1";
                             }
                         } catch (err) {
                             status.innerText = "Serveur non connecté. Utilisez le bouton d'injection pour tester !";
@@ -629,7 +629,7 @@
                     mediaRecorder.start();
                     isRecording = true;
                     btn.classList.add('pulse-recording', 'bg-rose-600');
-                    btn.classList.remove('bg-brand-600');
+                    btn.classList.remove('bg-amber-500');
                     status.innerText = "Écoute en cours... Dictez les prestations";
                     timer.classList.remove('hidden');
 
@@ -646,7 +646,7 @@
                 isRecording = false;
                 if (mediaRecorder && mediaRecorder.state !== "inactive") mediaRecorder.stop();
                 btn.classList.remove('pulse-recording', 'bg-rose-600');
-                btn.classList.add('bg-brand-600');
+                btn.classList.add('bg-amber-500');
                 clearInterval(recordingTimer);
             }
         }
@@ -655,7 +655,7 @@
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             
             document.querySelectorAll('.nav-btn-desktop').forEach(el => {
-                el.classList.remove('bg-brand-600', 'text-white', 'shadow-sm');
+                el.classList.remove('bg-btp-navy', 'text-white', 'shadow-sm');
                 el.classList.add('text-slate-600');
             });
 
@@ -663,7 +663,7 @@
             tabs.forEach(t => {
                 const mobileBtn = document.getElementById(`tab-btn-${t}`);
                 if (mobileBtn) {
-                    mobileBtn.classList.remove('text-brand-600');
+                    mobileBtn.classList.remove('text-btp-navy');
                     mobileBtn.classList.add('text-slate-400');
                 }
             });
@@ -672,13 +672,13 @@
             
             const activeDesktop = document.getElementById(`nav-${tabName}-desktop`);
             if (activeDesktop) {
-                activeDesktop.classList.add('bg-brand-600', 'text-white', 'shadow-sm');
+                activeDesktop.classList.add('bg-btp-navy', 'text-white', 'shadow-sm');
                 activeDesktop.classList.remove('text-slate-600');
             }
 
             const activeMobile = document.getElementById(`tab-btn-${tabName}`);
             if (activeMobile) {
-                activeMobile.classList.add('text-brand-600');
+                activeMobile.classList.add('text-btp-navy');
                 activeMobile.classList.remove('text-slate-400');
             }
 
@@ -724,17 +724,17 @@
                     const row = document.createElement('tr');
                     row.className = 'hover:bg-slate-50 transition';
                     row.innerHTML = `
-                        <td class="p-3 text-slate-500 font-medium">${d.date}</td>
-                        <td class="p-3 font-bold text-slate-900">${d.client}</td>
-                        <td class="p-3 font-extrabold text-emerald-600">${d.total}</td>
+                        <td class="p-3 text-slate-500 font-semibold">${d.date}</td>
+                        <td class="p-3 font-extrabold text-slate-900">${d.client}</td>
+                        <td class="p-3 font-extrabold text-amber-600">${d.total}</td>
                         <td class="p-3 text-right space-x-1">
-                            <button onclick="downloadDevisFromList(${index})" class="bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold px-2 py-1 rounded-lg transition inline-flex items-center gap-1">
+                            <button onclick="downloadDevisFromList(${index})" class="bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold px-2 py-1 rounded-lg transition inline-flex items-center gap-1">
                                 <i data-lucide="file-text" class="w-3.5 h-3.5 text-slate-600"></i> PDF
                             </button>
-                            <button onclick="relancerClientSMS(${index})" class="bg-brand-50 text-brand-700 hover:bg-brand-100 text-xs font-semibold px-2 py-1 rounded-lg transition inline-flex items-center gap-1">
+                            <button onclick="relancerClientSMS(${index})" class="bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100 text-xs font-bold px-2 py-1 rounded-lg transition inline-flex items-center gap-1">
                                 <i data-lucide="smartphone" class="w-3.5 h-3.5"></i> SMS
                             </button>
-                            <button onclick="deleteDevis(${index})" class="bg-rose-50 text-rose-600 hover:bg-rose-100 text-xs font-semibold px-2 py-1 rounded-lg transition inline-flex">
+                            <button onclick="deleteDevis(${index})" class="bg-rose-50 text-rose-600 hover:bg-rose-100 text-xs font-bold px-2 py-1 rounded-lg transition inline-flex">
                                 <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                             </button>
                         </td>
@@ -792,13 +792,13 @@
             }
             devisList.forEach(d => {
                 const item = document.createElement('div');
-                item.className = 'bg-slate-50 p-3.5 rounded-xl border border-slate-200/80 flex items-center justify-between text-xs';
+                item.className = 'bg-slate-50 p-3.5 rounded-xl border border-slate-200 flex items-center justify-between text-xs';
                 item.innerHTML = `
                     <div>
                         <div class="font-bold text-slate-900">${d.client} (${d.id})</div>
                         <div class="text-slate-500">${d.total} — Date: ${d.date}</div>
                     </div>
-                    <span class="font-semibold px-2 py-0.5 rounded-full ${d.ereportingStatus === 'Transmis' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">${d.ereportingStatus || 'À Transmettre'}</span>
+                    <span class="font-bold px-2.5 py-1 rounded-full ${d.ereportingStatus === 'Transmis' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">${d.ereportingStatus || 'À Transmettre'}</span>
                 `;
                 container.appendChild(item);
             });
