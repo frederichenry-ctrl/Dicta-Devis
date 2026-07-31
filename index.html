@@ -105,7 +105,7 @@
 
     <main class="max-w-4xl mx-auto px-5 py-8 flex-1 w-full">
 
-        <!-- TAB 1: DICTÉE & DEVÍS -->
+        <!-- TAB 1: DICTÉE & DEVIS -->
         <section id="tab-app" class="tab-content space-y-8">
 
             <div class="text-center space-y-3 no-print">
@@ -157,15 +157,15 @@
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 no-print">
                     <div>
                         <label class="block text-xs font-display font-bold uppercase tracking-wider text-slate-500 mb-1">Nom Client</label>
-                        <input type="text" id="client-name" value="Jean Dupont" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-medium focus:border-amber-500 focus:bg-white focus:outline-none text-slate-900">
+                        <input type="text" id="client-name" placeholder="Nom du client" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-medium focus:border-amber-500 focus:bg-white focus:outline-none text-slate-900">
                     </div>
                     <div>
                         <label class="block text-xs font-display font-bold uppercase tracking-wider text-slate-500 mb-1">Mobile (Relance SMS)</label>
-                        <input type="tel" id="client-phone" value="0612345678" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-medium focus:border-amber-500 focus:bg-white focus:outline-none text-slate-900">
+                        <input type="tel" id="client-phone" placeholder="06..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-medium focus:border-amber-500 focus:bg-white focus:outline-none text-slate-900">
                     </div>
                     <div>
                         <label class="block text-xs font-display font-bold uppercase tracking-wider text-slate-500 mb-1">Email Client</label>
-                        <input type="email" id="client-email" value="jean.dupont@email.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-medium focus:border-amber-500 focus:bg-white focus:outline-none text-slate-900">
+                        <input type="email" id="client-email" placeholder="client@email.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-medium focus:border-amber-500 focus:bg-white focus:outline-none text-slate-900">
                     </div>
                 </div>
 
@@ -217,8 +217,8 @@
         <section id="tab-admin" class="tab-content hidden space-y-6 no-print">
             <div class="flex items-center justify-between">
                 <h1 class="font-display text-3xl font-extrabold uppercase text-slate-900">Mes Devis Enregistrés</h1>
-                <button onclick="showTab('app')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-display font-bold text-sm px-4 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm">
-                    <i data-lucide="plus" class="w-4 h-4"></i> Nouveau
+                <button onclick="resetForm(); showTab('app');" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-display font-bold text-sm px-4 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm">
+                    <i data-lucide="plus" class="w-4 h-4"></i> Nouveau Devis
                 </button>
             </div>
 
@@ -407,12 +407,21 @@
         let mediaRecorder = null;
         let audioChunks = [];
         
-        let items = [
-            { designation: "Remplacement tableau électrique 3 rangées Schneider", quantite: 1, prix: 450, tva: 10 },
-            { designation: "Pose de 5 prises Céliane Legrand avec saignée", quantite: 5, prix: 30, tva: 10 }
-        ];
+        // TABLEAU INITIALEMENT VIDE
+        let items = [];
 
         let devisList = JSON.parse(localStorage.getItem('dictadevis_data') || '[]');
+
+        function resetForm() {
+            document.getElementById('client-name').value = '';
+            document.getElementById('client-phone').value = '';
+            document.getElementById('client-email').value = '';
+            items = [];
+            renderItems();
+            const status = document.getElementById('mic-status');
+            status.innerText = "Appuyez et dictez votre chantier";
+            status.className = "text-slate-800 font-display uppercase tracking-wider text-xl font-extrabold mb-1";
+        }
 
         function renderItems() {
             const container = document.getElementById('items-container');
@@ -421,42 +430,46 @@
             let totalHT = 0;
             let totalTVA = 0;
 
-            items.forEach((item, index) => {
-                const itemHT = item.quantite * item.prix;
-                const itemTVA = itemHT * (item.tva / 100);
-                totalHT += itemHT;
-                totalTVA += itemTVA;
+            if (items.length === 0) {
+                container.innerHTML = '<div class="text-center py-6 text-slate-400 text-xs italic bg-slate-50 rounded-2xl border border-dashed border-slate-200">Aucune prestation pour le moment. Dictez à la voix ou cliquez sur "Ajouter une ligne".</div>';
+            } else {
+                items.forEach((item, index) => {
+                    const itemHT = (item.quantite || 0) * (item.prix || 0);
+                    const itemTVA = itemHT * ((item.tva || 0) / 100);
+                    totalHT += itemHT;
+                    totalTVA += itemTVA;
 
-                const row = document.createElement('div');
-                row.className = 'bg-slate-50 p-3 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center gap-3';
-                row.innerHTML = `
-                    <input type="text" value="${item.designation}" onchange="updateItem(${index}, 'designation', this.value)" class="flex-1 bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-sm text-slate-900 font-medium focus:outline-none w-full">
-                    
-                    <div class="flex items-center gap-2 w-full sm:w-auto">
-                        <div class="flex items-center gap-1">
-                            <span class="text-xs text-slate-500">Qté:</span>
-                            <input type="number" value="${item.quantite}" onchange="updateItem(${index}, 'quantite', parseFloat(this.value))" class="w-16 bg-white border border-slate-200 rounded-xl px-2 py-1.5 text-sm font-medium text-center text-slate-900 focus:outline-none">
+                    const row = document.createElement('div');
+                    row.className = 'bg-slate-50 p-3 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center gap-3';
+                    row.innerHTML = `
+                        <input type="text" value="${item.designation || ''}" onchange="updateItem(${index}, 'designation', this.value)" placeholder="Description prestation" class="flex-1 bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-sm text-slate-900 font-medium focus:outline-none w-full">
+                        
+                        <div class="flex items-center gap-2 w-full sm:w-auto">
+                            <div class="flex items-center gap-1">
+                                <span class="text-xs text-slate-500">Qté:</span>
+                                <input type="number" value="${item.quantite || 1}" onchange="updateItem(${index}, 'quantite', parseFloat(this.value))" class="w-16 bg-white border border-slate-200 rounded-xl px-2 py-1.5 text-sm font-medium text-center text-slate-900 focus:outline-none">
+                            </div>
+
+                            <div class="flex items-center gap-1">
+                                <span class="text-xs text-slate-500">Prix HT:</span>
+                                <input type="number" value="${item.prix || 0}" onchange="updateItem(${index}, 'prix', parseFloat(this.value))" class="w-24 bg-white border border-slate-200 rounded-xl px-2 py-1.5 text-sm font-medium text-right text-slate-900 focus:outline-none">
+                                <span class="text-xs text-slate-500">€</span>
+                            </div>
+
+                            <select onchange="updateItem(${index}, 'tva', parseFloat(this.value))" class="bg-white border border-slate-200 rounded-xl px-2 py-1.5 text-xs font-semibold text-slate-700 focus:outline-none">
+                                <option value="5.5" ${item.tva === 5.5 ? 'selected' : ''}>5.5%</option>
+                                <option value="10" ${item.tva === 10 ? 'selected' : ''}>10%</option>
+                                <option value="20" ${item.tva === 20 ? 'selected' : ''}>20%</option>
+                            </select>
+
+                            <button onclick="removeItem(${index})" class="text-slate-400 hover:text-rose-600 p-1.5 transition">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
                         </div>
-
-                        <div class="flex items-center gap-1">
-                            <span class="text-xs text-slate-500">Prix HT:</span>
-                            <input type="number" value="${item.prix}" onchange="updateItem(${index}, 'prix', parseFloat(this.value))" class="w-24 bg-white border border-slate-200 rounded-xl px-2 py-1.5 text-sm font-medium text-right text-slate-900 focus:outline-none">
-                            <span class="text-xs text-slate-500">€</span>
-                        </div>
-
-                        <select onchange="updateItem(${index}, 'tva', parseFloat(this.value))" class="bg-white border border-slate-200 rounded-xl px-2 py-1.5 text-xs font-semibold text-slate-700 focus:outline-none">
-                            <option value="5.5" ${item.tva === 5.5 ? 'selected' : ''}>5.5%</option>
-                            <option value="10" ${item.tva === 10 ? 'selected' : ''}>10%</option>
-                            <option value="20" ${item.tva === 20 ? 'selected' : ''}>20%</option>
-                        </select>
-
-                        <button onclick="removeItem(${index})" class="text-slate-400 hover:text-rose-600 p-1.5 transition">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i>
-                        </button>
-                    </div>
-                `;
-                container.appendChild(row);
-            });
+                    `;
+                    container.appendChild(row);
+                });
+            }
 
             document.getElementById('total-ht').innerText = totalHT.toFixed(2) + ' €';
             document.getElementById('total-tva').innerText = totalTVA.toFixed(2) + ' €';
@@ -471,7 +484,7 @@
         }
 
         function addLine() {
-            items.push({ designation: "Nouvelle prestation BTP", quantite: 1, prix: 100, tva: 10 });
+            items.push({ designation: "", quantite: 1, prix: 0, tva: 10 });
             renderItems();
         }
 
@@ -480,11 +493,11 @@
             renderItems();
         }
 
-        // TÉLÉCHARGEMENT PDF (IMPRESSION NATIVE UNIVERSELLE)
+        // TÉLÉCHARGEMENT PDF
         function downloadPDF() {
-            const clientName = document.getElementById('client-name').value;
-            const clientPhone = document.getElementById('client-phone').value;
-            const clientEmail = document.getElementById('client-email').value;
+            const clientName = document.getElementById('client-name').value || 'Client';
+            const clientPhone = document.getElementById('client-phone').value || '-';
+            const clientEmail = document.getElementById('client-email').value || '-';
             
             document.getElementById('pdf-company-name').innerText = document.getElementById('company-name').value;
             document.getElementById('pdf-company-siret').innerText = 'SIRET : ' + document.getElementById('company-siret').value;
@@ -499,13 +512,13 @@
             tbody.innerHTML = '';
             
             items.forEach(item => {
-                const itemHT = item.quantite * item.prix;
+                const itemHT = (item.quantite || 0) * (item.prix || 0);
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td class="p-3">${item.designation}</td>
-                    <td class="p-3 text-center">${item.quantite}</td>
-                    <td class="p-3 text-right">${item.prix.toFixed(2)} €</td>
-                    <td class="p-3 text-right">${item.tva}%</td>
+                    <td class="p-3">${item.designation || '-'}</td>
+                    <td class="p-3 text-center">${item.quantite || 0}</td>
+                    <td class="p-3 text-right">${(item.prix || 0).toFixed(2)} €</td>
+                    <td class="p-3 text-right">${item.tva || 0}%</td>
                     <td class="p-3 text-right font-bold">${itemHT.toFixed(2)} €</td>
                 `;
                 tbody.appendChild(tr);
@@ -525,10 +538,15 @@
 
         // ENVOI EMAIL AUTOMATIQUE
         function exportEmail() {
-            const client = document.getElementById('client-name').value;
+            const client = document.getElementById('client-name').value || 'Client';
             const email = document.getElementById('client-email').value;
             const total = document.getElementById('total-ttc').innerText;
             
+            if (!email) {
+                alert("Veuillez renseigner l'email du client avant d'envoyer.");
+                return;
+            }
+
             alert("N'oubliez pas d'attacher le fichier PDF téléchargé à votre email avant d'envoyer !");
 
             const subject = encodeURIComponent(`Votre Devis BTP — ${client}`);
@@ -641,10 +659,15 @@
         }
 
         function saveDevis(statut) {
-            const client = document.getElementById('client-name').value;
-            const phone = document.getElementById('client-phone').value;
-            const email = document.getElementById('client-email').value;
+            const client = document.getElementById('client-name').value || 'Client Inconnu';
+            const phone = document.getElementById('client-phone').value || '';
+            const email = document.getElementById('client-email').value || '';
             const totalTTC = document.getElementById('total-ttc').innerText;
+
+            if (items.length === 0) {
+                alert("Veuillez ajouter au moins une prestation avant d'enregistrer.");
+                return;
+            }
 
             const newDevis = {
                 id: 'DEV-' + Math.floor(1000 + Math.random() * 9000),
@@ -660,6 +683,9 @@
             devisList.unshift(newDevis);
             localStorage.setItem('dictadevis_data', JSON.stringify(devisList));
             alert(`Devis enregistré dans "Mes Devis" !`);
+            
+            // RÉINITIALISATION AUTOMATIQUE
+            resetForm();
             showTab('admin');
         }
 
@@ -670,26 +696,30 @@
             let totalCount = devisList.length;
             let signedAmount = 0;
 
-            devisList.forEach((d, index) => {
-                signedAmount += parseFloat(d.total.replace(' €', ''));
+            if (devisList.length === 0) {
+                body.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-slate-400 italic">Aucun devis enregistré pour le moment.</td></tr>';
+            } else {
+                devisList.forEach((d, index) => {
+                    signedAmount += parseFloat(d.total.replace(' €', ''));
 
-                const row = document.createElement('tr');
-                row.className = 'hover:bg-slate-50 transition';
-                row.innerHTML = `
-                    <td class="p-4 text-slate-500 font-medium">${d.date}</td>
-                    <td class="p-4 font-bold text-slate-900">${d.client}</td>
-                    <td class="p-4 font-extrabold text-amber-600">${d.total}</td>
-                    <td class="p-4 text-right space-x-2">
-                        <button onclick="relancerClientSMS(${index})" class="bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 text-xs font-display font-bold uppercase px-3 py-1.5 rounded-lg transition inline-flex items-center gap-1">
-                            <i data-lucide="smartphone" class="w-3.5 h-3.5"></i> Relance SMS
-                        </button>
-                        <button onclick="deleteDevis(${index})" class="bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100 text-xs font-display font-bold uppercase px-2.5 py-1.5 rounded-lg transition inline-flex">
-                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                        </button>
-                    </td>
-                `;
-                body.appendChild(row);
-            });
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-slate-50 transition';
+                    row.innerHTML = `
+                        <td class="p-4 text-slate-500 font-medium">${d.date}</td>
+                        <td class="p-4 font-bold text-slate-900">${d.client}</td>
+                        <td class="p-4 font-extrabold text-amber-600">${d.total}</td>
+                        <td class="p-4 text-right space-x-2">
+                            <button onclick="relancerClientSMS(${index})" class="bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 text-xs font-display font-bold uppercase px-3 py-1.5 rounded-lg transition inline-flex items-center gap-1">
+                                <i data-lucide="smartphone" class="w-3.5 h-3.5"></i> Relance SMS
+                            </button>
+                            <button onclick="deleteDevis(${index})" class="bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100 text-xs font-display font-bold uppercase px-2.5 py-1.5 rounded-lg transition inline-flex">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </td>
+                    `;
+                    body.appendChild(row);
+                });
+            }
 
             document.getElementById('stat-total-count').innerText = totalCount;
             document.getElementById('stat-signed-amount').innerText = signedAmount.toFixed(2) + ' €';
@@ -711,7 +741,6 @@
             window.open(`sms:${devis.phone}?body=${msg}`, '_blank');
         }
 
-        // MODULE E-REPORTING (AFFICHAGE & EXPORT CSV)
         function renderEReportingTable() {
             const container = document.getElementById('ereporting-list');
             container.innerHTML = '';
@@ -745,7 +774,6 @@
             renderEReportingTable();
         }
 
-        // EXPORT CSV NORME POUR LA COMPTABILITÉ & PORTAIL FISCAL
         function downloadEReportingCSV() {
             if (devisList.length === 0) {
                 alert("Aucun devis enregistré à exporter.");
