@@ -2,15 +2,20 @@
 <html lang="fr" class="h-full bg-slate-50">
 <head>
     <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <title>Dicta'Devis — Le devis BTP à la voix</title>
 
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"/>
 
+    <!-- Tailwind CSS & Lucide Icons -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- SDK Stripe.js -->
+    <script src="https://js.stripe.com/v3/"></script>
 
     <script>
         tailwind.config = {
@@ -21,11 +26,12 @@
                     },
                     colors: {
                         brand: {
-                            50: '#fffbebeb',
-                            100: '#fef3c7',
-                            500: '#f59e0b',
-                            600: '#d97706',
-                            900: '#78350f',
+                            50: '#eepff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#1e1b4b',
                         }
                     }
                 }
@@ -39,14 +45,17 @@
             background-color: #f8fafc;
             color: #0f172a;
             -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
         }
-        .pulse-animation {
+
+        .pulse-recording {
             animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
         }
+
         @keyframes pulse-ring {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.5); }
-            70% { transform: scale(1.04); box-shadow: 0 0 0 16px rgba(245, 158, 11, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+            0% { transform: scale(0.96); box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.5); }
+            70% { transform: scale(1.03); box-shadow: 0 0 0 18px rgba(225, 29, 72, 0); }
+            100% { transform: scale(0.96); box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); }
         }
 
         @media print {
@@ -64,153 +73,159 @@
         }
     </style>
 </head>
-<body class="min-h-full flex flex-col justify-between bg-slate-50 text-slate-900 pb-28 sm:pb-8">
+<body class="min-h-full flex flex-col justify-between bg-slate-50 text-slate-900 pb-20 sm:pb-8">
 
     <!-- BANNIÈRE ESSAI GRATUIT 14 JOURS -->
-    <div id="trial-banner" class="bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 px-4 py-2 text-xs font-semibold text-center flex items-center justify-center gap-2 no-print shadow-sm">
-        <i data-lucide="clock" class="w-4 h-4"></i>
-        <span id="trial-text">Chargement de votre période d'essai...</span>
-        <button onclick="showTab('tarifs')" class="underline font-bold hover:text-white transition ml-1">Passer au plan Pro</button>
+    <div id="trial-banner" class="bg-indigo-900 text-white px-4 py-2 text-xs font-medium text-center flex items-center justify-center gap-2 no-print">
+        <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span id="trial-text">Période d'essai 14 jours active</span>
+        <button onclick="showTab('tarifs')" class="ml-2 bg-indigo-800 hover:bg-indigo-700 text-indigo-100 px-2.5 py-0.5 rounded-full font-semibold transition text-[11px]">Passer en Pro</button>
     </div>
 
-    <header class="bg-white/80 backdrop-blur-md mx-auto flex w-full max-w-5xl items-center justify-between px-5 py-3.5 border-b border-slate-200/80 sticky top-0 z-40 no-print">
-        <div class="flex items-center gap-2.5 cursor-pointer" onclick="showTab('app')">
-            <div class="w-8 h-8 rounded-xl bg-amber-500 flex items-center justify-center text-slate-950 font-extrabold text-sm shadow-sm">
-                DV
+    <!-- EN-TÊTE DESKTOP & MOBILE -->
+    <header class="bg-white/80 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-40 no-print">
+        <div class="max-w-4xl mx-auto flex items-center justify-between px-4 py-3">
+            <div class="flex items-center gap-2.5 cursor-pointer" onclick="showTab('app')">
+                <div class="w-9 h-9 rounded-xl bg-brand-600 flex items-center justify-center text-white font-extrabold text-base shadow-sm shadow-brand-500/30">
+                    <i data-lucide="mic" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <span class="text-lg font-bold tracking-tight text-slate-900 block leading-none">Dicta<span class="text-brand-600">'Devis</span></span>
+                    <span class="text-[10px] text-slate-400 font-semibold tracking-wider uppercase">Assistant Vocal BTP</span>
+                </div>
             </div>
-            <span class="text-xl font-bold tracking-tight text-slate-900">
-                Dicta<span class="text-amber-500">'Devis</span>
-            </span>
+            
+            <!-- Navigation Desktop -->
+            <nav class="hidden sm:flex items-center gap-1">
+                <button onclick="showTab('app')" id="nav-app-desktop" class="nav-btn-desktop px-3.5 py-2 rounded-xl text-xs font-semibold transition bg-brand-600 text-white shadow-sm">Dictée</button>
+                <button onclick="showTab('admin')" id="nav-admin-desktop" class="nav-btn-desktop px-3.5 py-2 rounded-xl text-xs font-medium transition text-slate-600 hover:bg-slate-100">Mes Devis</button>
+                <button onclick="showTab('ereporting')" id="nav-ereporting-desktop" class="nav-btn-desktop px-3.5 py-2 rounded-xl text-xs font-medium transition text-slate-600 hover:bg-slate-100">E-Reporting</button>
+                <button onclick="showTab('tarifs')" id="nav-tarifs-desktop" class="nav-btn-desktop px-3.5 py-2 rounded-xl text-xs font-semibold transition text-emerald-700 bg-emerald-50">Tarifs</button>
+                <button onclick="showTab('settings')" id="nav-settings-desktop" class="nav-btn-desktop px-3.5 py-2 rounded-xl text-xs font-medium transition text-slate-600 hover:bg-slate-100">Profil</button>
+            </nav>
         </div>
-        
-        <nav class="flex items-center gap-1 sm:gap-1.5">
-            <button onclick="showTab('app')" id="nav-app" class="nav-btn px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition bg-amber-500 text-slate-950 shadow-sm">
-                Dictée
-            </button>
-            <button onclick="showTab('admin')" id="nav-admin" class="nav-btn px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition text-slate-600 hover:bg-slate-100">
-                Devis
-            </button>
-            <button onclick="showTab('ereporting')" id="nav-ereporting" class="nav-btn px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition text-slate-600 hover:bg-slate-100 hidden sm:block">
-                E-Reporting
-            </button>
-            <button onclick="showTab('tarifs')" id="nav-tarifs" class="nav-btn px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition text-amber-700 hover:bg-amber-50">
-                Tarifs
-            </button>
-            <button onclick="showTab('settings')" id="nav-settings" class="nav-btn px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition text-slate-600 hover:bg-slate-100">
-                Profil
-            </button>
-        </nav>
     </header>
 
-    <main class="max-w-4xl mx-auto px-4 sm:px-5 py-6 sm:py-8 flex-1 w-full">
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 py-5 sm:py-8 flex-1 w-full">
 
         <!-- TAB 1: DICTÉE & DEVIS -->
-        <section id="tab-app" class="tab-content space-y-6 sm:space-y-8">
+        <section id="tab-app" class="tab-content space-y-5">
 
-            <div class="text-center space-y-2 no-print">
-                <span class="inline-block text-xs font-semibold tracking-wide text-amber-600 bg-amber-50 px-3 py-1 rounded-full border border-amber-200/60">Électriciens · Plombiers · Peintres · Maçons</span>
-                <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900">
-                    Dictez. Validez. Signez.
-                </h1>
-                <p class="mx-auto max-w-lg text-sm sm:text-base text-slate-500 font-normal">
-                    Vos devis et factures conformes BTP, générés à la voix en quelques secondes.
-                </p>
-            </div>
-
-            <!-- CARTE DU MICROPHONE -->
-            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm text-center flex flex-col items-center justify-center no-print">
-                <div id="mic-status" class="text-slate-800 font-bold tracking-tight text-base sm:text-lg mb-1">
+            <!-- MODULE MICROPHONE & DÉMO -->
+            <div class="bg-white rounded-3xl p-5 sm:p-8 border border-slate-200/80 shadow-sm text-center flex flex-col items-center justify-center no-print relative overflow-hidden">
+                
+                <div id="mic-status" class="text-slate-900 font-bold tracking-tight text-lg sm:text-xl mb-1">
                     Appuyez et dictez votre chantier
                 </div>
-                <div class="text-xs text-slate-400 font-medium mb-4">L'IA structure automatiquement les prestations et les montants</div>
+                <p class="text-xs text-slate-500 max-w-sm mb-4">L'IA analyse vos paroles pour créer le devis immédiatement.</p>
 
-                <button id="mic-btn" onclick="toggleRecording()" class="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-amber-500 text-slate-950 flex items-center justify-center shadow-lg shadow-amber-500/20 hover:bg-amber-400 transition transform active:scale-95 my-2">
-                    <i data-lucide="mic" id="mic-icon" class="w-10 h-10 sm:w-14 sm:h-14"></i>
+                <!-- Bouton Micro Principal -->
+                <button id="mic-btn" onclick="toggleRecording()" class="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-brand-600 text-white flex items-center justify-center shadow-lg shadow-brand-600/30 hover:bg-brand-700 transition transform active:scale-95 my-1">
+                    <i data-lucide="mic" id="mic-icon" class="w-10 h-10 sm:w-12 sm:h-12"></i>
                 </button>
 
-                <div id="timer" class="hidden mt-3 font-mono font-semibold text-xs sm:text-sm text-amber-700 bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
+                <div id="timer" class="hidden mt-3 font-mono font-semibold text-xs text-rose-600 bg-rose-50 px-3 py-1 rounded-full border border-rose-200">
                     00:00
                 </div>
 
-                <div class="mt-4 sm:mt-6 bg-slate-50 border border-slate-200/70 rounded-2xl p-3.5 text-xs text-slate-500 max-w-md text-left">
-                    <span class="font-semibold text-amber-700 block mb-1">💡 Exemple à dicter :</span>
-                    <span class="italic">"Client Jean Dupont au Mans. Pose d'un tableau électrique Schneider 3 rangées, 450 euros. Installation de 5 prises Céliane Legrand, 150 euros. TVA 10 pourcent."</span>
-                </div>
+                <!-- Bouton démo rapide pour test artisan -->
+                <button onclick="loadDemoData()" class="mt-4 inline-flex items-center gap-1.5 text-xs text-brand-600 font-semibold bg-brand-50 hover:bg-brand-100 px-3 py-1.5 rounded-full transition border border-brand-100">
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Injecter un exemple de devis (Test rapide)
+                </button>
             </div>
 
             <!-- ÉDITEUR DE DEVIS -->
-            <div id="editor-section" class="bg-white rounded-3xl border border-slate-200/80 shadow-sm p-5 sm:p-6 space-y-6">
+            <div id="editor-section" class="bg-white rounded-3xl border border-slate-200/80 shadow-sm p-5 sm:p-6 space-y-5">
                 
-                <div class="flex items-center justify-between border-b border-slate-100 pb-4 no-print">
-                    <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-                        <i data-lucide="edit-3" class="w-4 h-4 text-amber-500"></i>
-                        Détails du Devis
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3.5 no-print">
+                    <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                        <i data-lucide="file-text" class="w-4 h-4 text-brand-600"></i>
+                        Contenu du Devis
                     </h2>
-                    <span class="text-xs font-semibold tracking-wide px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200/80 rounded-full">
-                        Factur-X Ready
+                    <span class="text-[11px] font-semibold px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200/80 rounded-full flex items-center gap-1">
+                        <i data-lucide="shield-check" class="w-3 h-3"></i> Factur-X Ready
                     </span>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 no-print">
+                <!-- Infos Client -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 no-print">
                     <div>
                         <label class="block text-xs font-semibold text-slate-500 mb-1">Nom Client</label>
-                        <input type="text" id="client-name" placeholder="Nom du client" class="w-full bg-slate-50 border border-slate-200/80 rounded-xl px-3.5 py-2 text-sm font-medium focus:border-amber-500 focus:bg-white focus:outline-none text-slate-900 transition">
+                        <input type="text" id="client-name" placeholder="ex: Jean Dupont" class="w-full bg-slate-50 border border-slate-200/80 rounded-xl px-3 py-2 text-sm font-medium focus:border-brand-600 focus:bg-white focus:outline-none transition">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1">Mobile (Relance SMS)</label>
-                        <input type="tel" id="client-phone" placeholder="06..." class="w-full bg-slate-50 border border-slate-200/80 rounded-xl px-3.5 py-2 text-sm font-medium focus:border-amber-500 focus:bg-white focus:outline-none text-slate-900 transition">
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Téléphone Client</label>
+                        <input type="tel" id="client-phone" placeholder="ex: 06 12 34 56 78" class="w-full bg-slate-50 border border-slate-200/80 rounded-xl px-3 py-2 text-sm font-medium focus:border-brand-600 focus:bg-white focus:outline-none transition">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-500 mb-1">Email Client</label>
-                        <input type="email" id="client-email" placeholder="client@email.com" class="w-full bg-slate-50 border border-slate-200/80 rounded-xl px-3.5 py-2 text-sm font-medium focus:border-amber-500 focus:bg-white focus:outline-none text-slate-900 transition">
+                        <input type="email" id="client-email" placeholder="client@email.com" class="w-full bg-slate-50 border border-slate-200/80 rounded-xl px-3 py-2 text-sm font-medium focus:border-brand-600 focus:bg-white focus:outline-none transition">
                     </div>
                 </div>
 
+                <!-- Prestations -->
                 <div class="no-print">
                     <div class="flex items-center justify-between mb-2">
-                        <label class="block text-xs font-semibold text-slate-500">Prestations du Devis</label>
-                        <button onclick="addLine()" class="text-xs font-semibold text-amber-600 hover:text-amber-700 flex items-center gap-1 transition">
+                        <label class="block text-xs font-semibold text-slate-500">Lignes de prestations</label>
+                        <button onclick="addLine()" class="text-xs font-semibold text-brand-600 hover:text-brand-700 flex items-center gap-1 transition">
                             <i data-lucide="plus" class="w-3.5 h-3.5"></i> Ajouter une ligne
                         </button>
                     </div>
-                    <div class="space-y-2.5" id="items-container"></div>
+                    <div class="space-y-2" id="items-container"></div>
                 </div>
 
-                <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/80 space-y-2 no-print">
-                    <div class="flex justify-between text-xs sm:text-sm text-slate-500">
+                <!-- Totaux -->
+                <div class="bg-slate-900 text-white rounded-2xl p-4 space-y-2 no-print">
+                    <div class="flex justify-between text-xs text-slate-400">
                         <span>Total HT</span>
-                        <span class="font-medium text-slate-900" id="total-ht">0.00 €</span>
+                        <span class="font-medium text-slate-200" id="total-ht">0.00 €</span>
                     </div>
-                    <div class="flex justify-between text-xs sm:text-sm text-slate-500">
+                    <div class="flex justify-between text-xs text-slate-400">
                         <span>TVA</span>
-                        <span class="font-medium text-slate-900" id="total-tva">0.00 €</span>
+                        <span class="font-medium text-slate-200" id="total-tva">0.00 €</span>
                     </div>
-                    <div class="border-t border-slate-200/80 pt-2 flex justify-between text-base sm:text-lg font-bold text-slate-900">
+                    <div class="border-t border-slate-800 pt-2 flex justify-between text-lg font-bold">
                         <span>TOTAL TTC</span>
-                        <span class="text-amber-600 font-extrabold" id="total-ttc">0.00 €</span>
+                        <span class="text-emerald-400 font-extrabold" id="total-ttc">0.00 €</span>
                     </div>
+                </div>
+
+                <!-- Actions Rapides (Mobile/Desktop) -->
+                <div class="grid grid-cols-3 gap-2 pt-1 no-print">
+                    <button onclick="downloadPDF()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold py-2.5 px-2 rounded-xl transition flex items-center justify-center gap-1.5 text-xs">
+                        <i data-lucide="download" class="w-4 h-4 text-slate-600"></i>
+                        <span>PDF</span>
+                    </button>
+                    <button onclick="exportEmail()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold py-2.5 px-2 rounded-xl transition flex items-center justify-center gap-1.5 text-xs">
+                        <i data-lucide="mail" class="w-4 h-4 text-slate-600"></i>
+                        <span>Email</span>
+                    </button>
+                    <button onclick="saveDevis('Enregistré')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-2 rounded-xl transition flex items-center justify-center gap-1.5 text-xs shadow-sm">
+                        <i data-lucide="check" class="w-4 h-4"></i>
+                        <span>Enregistrer</span>
+                    </button>
                 </div>
             </div>
 
         </section>
 
         <!-- TAB 2: MES DEVIS -->
-        <section id="tab-admin" class="tab-content hidden space-y-6 no-print">
+        <section id="tab-admin" class="tab-content hidden space-y-5 no-print">
             <div class="flex items-center justify-between">
-                <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">Mes Devis Enregistrés</h1>
-                <button onclick="resetForm(); showTab('app');" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold text-xs sm:text-sm px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm">
+                <h1 class="text-xl font-bold tracking-tight text-slate-900">Mes Devis Enregistrés</h1>
+                <button onclick="resetForm(); showTab('app');" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm">
                     <i data-lucide="plus" class="w-4 h-4"></i> Nouveau Devis
                 </button>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
-                <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm">
                     <div class="text-xs font-medium text-slate-400 mb-1">Nombre de Devis</div>
-                    <div class="text-2xl sm:text-3xl font-extrabold text-slate-900" id="stat-total-count">0</div>
+                    <div class="text-2xl font-extrabold text-slate-900" id="stat-total-count">0</div>
                 </div>
-                <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+                <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm">
                     <div class="text-xs font-medium text-slate-400 mb-1">Total Général</div>
-                    <div class="text-2xl sm:text-3xl font-extrabold text-amber-600" id="stat-signed-amount">0.00 €</div>
+                    <div class="text-2xl font-extrabold text-brand-600" id="stat-signed-amount">0.00 €</div>
                 </div>
             </div>
 
@@ -231,125 +246,132 @@
             </div>
         </section>
 
-        <!-- TAB 3: E-REPORTING B2C & EXPORT CONFORME -->
-        <section id="tab-ereporting" class="tab-content hidden space-y-6 no-print">
+        <!-- TAB 3: E-REPORTING B2C -->
+        <section id="tab-ereporting" class="tab-content hidden space-y-5 no-print">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
-                    <h1 class="text-xl sm:text-2xl font-bold text-slate-900">Module E-Reporting Fiscal</h1>
-                    <p class="text-slate-500 text-xs sm:text-sm">Gestion des déclarations d'encaissements B2C et export conforme (PPF / PDP).</p>
+                    <h1 class="text-xl font-bold text-slate-900">Module E-Reporting Fiscal</h1>
+                    <p class="text-slate-500 text-xs">Déclarations d'encaissements B2C et export PPF / PDP.</p>
                 </div>
-                <button onclick="downloadEReportingCSV()" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs px-4 py-2.5 rounded-xl transition flex items-center justify-center gap-2 shadow-sm">
-                    <i data-lucide="file-spreadsheet" class="w-4 h-4 text-amber-500"></i> Exporter CSV / Excel
+                <button onclick="downloadEReportingCSV()" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs px-3.5 py-2 rounded-xl transition flex items-center justify-center gap-2 shadow-sm">
+                    <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-400"></i> Exporter CSV
                 </button>
             </div>
 
-            <div class="bg-white rounded-3xl border border-slate-200/80 shadow-sm p-5 sm:p-6 space-y-4">
-                <div class="flex items-center justify-between border-b border-slate-100 pb-4">
-                    <h2 class="text-base font-bold text-slate-900">Transactions B2C en attente</h2>
-                    <button onclick="transmitEReporting()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs px-3.5 py-2 rounded-xl transition flex items-center gap-2 shadow-sm">
-                        <i data-lucide="send" class="w-4 h-4"></i> Télétransmettre au PPF
+            <div class="bg-white rounded-3xl border border-slate-200/80 shadow-sm p-5 space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <h2 class="text-sm font-bold text-slate-900">Transactions B2C</h2>
+                    <button onclick="transmitEReporting()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs px-3 py-1.5 rounded-xl transition flex items-center gap-1.5">
+                        <i data-lucide="send" class="w-3.5 h-3.5"></i> Télétransmettre PPF
                     </button>
                 </div>
-                <div class="space-y-3" id="ereporting-list"></div>
+                <div class="space-y-2.5" id="ereporting-list"></div>
             </div>
         </section>
 
-        <!-- TAB 4: TARIFS & ESSAI 14 JOURS -->
-        <section id="tab-tarifs" class="tab-content hidden space-y-8 no-print">
-            <div class="text-center max-w-xl mx-auto space-y-2">
-                <h1 class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">Tarifs Simples. Sans Piège.</h1>
-                <p class="text-slate-500 text-sm">Profitez de 14 jours d'essai offerts sur l'ensemble des fonctionnalités.</p>
+        <!-- TAB 4: TARIFS & STRIPE CHECKOUT -->
+        <section id="tab-tarifs" class="tab-content hidden space-y-6 no-print">
+            <div class="text-center max-w-xl mx-auto space-y-1">
+                <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Abilité & Tarification Pro</h1>
+                <p class="text-slate-500 text-xs">Testez gratuitement pendant 14 jours, puis passez en Pro.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 max-w-3xl mx-auto">
-                <div class="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 flex flex-col justify-between shadow-sm">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-3xl mx-auto">
+                <div class="bg-white rounded-3xl border border-slate-200/80 p-6 flex flex-col justify-between shadow-sm">
                     <div>
-                        <span class="text-xs font-semibold px-3 py-1 bg-slate-100 text-slate-700 rounded-full">Essai 14 Jours</span>
-                        <div class="text-4xl font-extrabold text-slate-900 mt-4 mb-2">0 €</div>
-                        <p class="text-sm text-slate-500 mb-6">Accès complet pour tester l'outil sur vos chantiers.</p>
-                        <ul class="space-y-3 text-sm text-slate-600">
-                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-amber-600"></i> Dictée vocale illimitée</li>
-                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-amber-600"></i> Exports PDF & E-mails</li>
-                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-amber-600"></i> Sans carte bancaire</li>
+                        <span class="text-xs font-semibold px-2.5 py-1 bg-slate-100 text-slate-700 rounded-full">Offre d'essai</span>
+                        <div class="text-3xl font-extrabold text-slate-900 mt-3 mb-1">0 €</div>
+                        <p class="text-xs text-slate-500 mb-5">14 jours d'accès complet pour tester sur vos chantiers.</p>
+                        <ul class="space-y-2.5 text-xs text-slate-600">
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> Dictée vocale illimitée</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> Exports PDF & E-mails</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> Sans carte de crédit</li>
                         </ul>
                     </div>
-                    <button onclick="alert('Période d\'essai activée automatiquement à votre inscription.')" class="mt-8 w-full bg-slate-100 text-slate-800 font-semibold py-2.5 rounded-xl transition text-sm">Plan Actuel</button>
+                    <button class="mt-6 w-full bg-slate-100 text-slate-600 font-semibold py-2.5 rounded-xl text-xs cursor-default">Plan Actuel (Essai)</button>
                 </div>
 
-                <div class="bg-white rounded-3xl border-2 border-amber-500 p-6 sm:p-8 flex flex-col justify-between relative shadow-lg">
-                    <span class="absolute -top-3 right-6 text-xs font-bold px-3 py-1 bg-amber-500 text-slate-950 rounded-full">Pro BTP</span>
+                <div class="bg-white rounded-3xl border-2 border-brand-600 p-6 flex flex-col justify-between relative shadow-md">
+                    <span class="absolute -top-3 right-5 text-[11px] font-bold px-3 py-0.5 bg-brand-600 text-white rounded-full">Recommandé</span>
                     <div>
-                        <span class="text-xs font-semibold px-3 py-1 bg-amber-50 text-amber-700 rounded-full">Illimité</span>
-                        <div class="text-4xl font-extrabold text-slate-900 mt-4 mb-2">29 € <span class="text-sm font-normal text-slate-500">/ mois</span></div>
-                        <p class="text-sm text-slate-500 mb-6">Sans engagement. Rentabilisé dès le premier devis signé.</p>
-                        <ul class="space-y-3 text-sm text-slate-600">
-                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-amber-600"></i> <strong>Devis vocaux illimités</strong></li>
-                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-amber-600"></i> Factur-X & E-Reporting inclus</li>
-                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-amber-600"></i> Relances SMS & Support prioritaire</li>
+                        <span class="text-xs font-semibold px-2.5 py-1 bg-brand-50 text-brand-700 rounded-full">Pro BTP</span>
+                        <div class="text-3xl font-extrabold text-slate-900 mt-3 mb-1">29 € <span class="text-xs font-normal text-slate-500">/ mois</span></div>
+                        <p class="text-xs text-slate-500 mb-5">Sans engagement. Rentabilisé au 1er devis signé.</p>
+                        <ul class="space-y-2.5 text-xs text-slate-600">
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> <strong>Devis vocaux illimités</strong></li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> Factur-X & E-Reporting fiscal</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> Relances SMS & Support prioritaire</li>
                         </ul>
                     </div>
-                    <button onclick="alert('Redirection vers la page de paiement sécurisée Stripe...')" class="mt-8 w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-3 rounded-xl transition shadow-md shadow-amber-500/10 text-sm">Souscrire au plan Pro</button>
+                    <!-- BOUTON STRIPE -->
+                    <button onclick="redirectToStripeCheckout()" class="mt-6 w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 rounded-xl transition shadow-md shadow-brand-500/20 text-xs flex items-center justify-center gap-2">
+                        <i data-lucide="credit-card" class="w-4 h-4"></i> Activer le Plan Pro via Stripe
+                    </button>
                 </div>
             </div>
         </section>
 
         <!-- TAB 5: PROFIL -->
-        <section id="tab-settings" class="tab-content hidden space-y-6 no-print">
+        <section id="tab-settings" class="tab-content hidden space-y-5 no-print">
             <div>
-                <h1 class="text-xl sm:text-2xl font-bold text-slate-900">Profil & Décennale</h1>
-                <p class="text-slate-500 text-xs sm:text-sm">Informations légales injectées dans vos devis Factur-X.</p>
+                <h1 class="text-xl font-bold text-slate-900">Profil Artisan</h1>
+                <p class="text-slate-500 text-xs">Informations injectées dans vos devis officiels.</p>
             </div>
 
-            <div class="bg-white rounded-3xl border border-slate-200/80 shadow-sm p-5 sm:p-6 space-y-4">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="bg-white rounded-3xl border border-slate-200/80 shadow-sm p-5 space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-semibold text-slate-500 mb-1">Raison Sociale</label>
-                        <input type="text" id="company-name" value="ElecPro Mayenne SARL" class="w-full bg-slate-50 border border-slate-200/80 rounded-xl px-3.5 py-2 text-sm text-slate-900">
+                        <input type="text" id="company-name" value="ElecPro Mayenne SARL" class="w-full bg-slate-50 border border-slate-200/80 rounded-xl px-3 py-2 text-sm text-slate-900">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-500 mb-1">SIRET</label>
-                        <input type="text" id="company-siret" value="89234567800012" class="w-full bg-slate-50 border border-slate-200/80 rounded-xl px-3.5 py-2 text-sm text-slate-900">
+                        <input type="text" id="company-siret" value="89234567800012" class="w-full bg-slate-50 border border-slate-200/80 rounded-xl px-3 py-2 text-sm text-slate-900">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-500 mb-1">Assureur Décennale</label>
-                        <input type="text" id="insurance-name" value="AXA France BTP" class="w-full bg-slate-50 border border-slate-200/80 rounded-xl px-3.5 py-2 text-sm text-slate-900">
+                        <input type="text" id="insurance-name" value="AXA France BTP" class="w-full bg-slate-50 border border-slate-200/80 rounded-xl px-3 py-2 text-sm text-slate-900">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-500 mb-1">N° Contrat Décennale</label>
-                        <input type="text" id="insurance-num" value="DEC-2026-99482" class="w-full bg-slate-50 border border-slate-200/80 rounded-xl px-3.5 py-2 text-sm text-slate-900">
+                        <input type="text" id="insurance-num" value="DEC-2026-99482" class="w-full bg-slate-50 border border-slate-200/80 rounded-xl px-3 py-2 text-sm text-slate-900">
                     </div>
                 </div>
-                <button onclick="alert('Paramètres enregistrés !')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold text-xs px-5 py-2.5 rounded-xl transition shadow-sm">
-                    Enregistrer les modifications
+                <button onclick="alert('Modifications enregistrées !')" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs px-4 py-2 rounded-xl transition shadow-sm">
+                    Enregistrer les paramètres
                 </button>
             </div>
         </section>
 
     </main>
 
-    <!-- BARRE DE BOUTONS EN BAS DE PAGE (STICKY BOTTOM BAR) -->
-    <div id="sticky-bottom-actions" class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-slate-200/80 p-3 z-50 shadow-xl no-print">
-        <div class="max-w-4xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
-            <button onclick="downloadPDF()" class="flex-1 bg-rose-600 hover:bg-rose-700 active:scale-95 text-white font-semibold py-2.5 px-2 sm:px-4 rounded-xl transition flex items-center justify-center gap-1.5 text-xs sm:text-sm shadow-sm">
-                <i data-lucide="download" class="w-4 h-4"></i>
-                <span class="hidden sm:inline">Télécharger</span> PDF
+    <!-- BARRE DE NAVIGATION MOBILE (FIXED BOTTOM TAB BAR) -->
+    <div class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200/80 px-2 py-1.5 z-50 sm:hidden no-print">
+        <div class="flex items-center justify-around">
+            <button onclick="showTab('app')" id="tab-btn-app" class="flex flex-col items-center gap-0.5 text-brand-600 py-1 px-3 rounded-xl">
+                <i data-lucide="mic" class="w-5 h-5"></i>
+                <span class="text-[10px] font-semibold">Dictée</span>
             </button>
-            <button onclick="exportEmail()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-semibold py-2.5 px-2 sm:px-4 rounded-xl transition flex items-center justify-center gap-1.5 text-xs sm:text-sm shadow-sm">
-                <i data-lucide="mail" class="w-4 h-4"></i>
-                <span class="hidden sm:inline">Envoyer</span> Email
+            <button onclick="showTab('admin')" id="tab-btn-admin" class="flex flex-col items-center gap-0.5 text-slate-400 py-1 px-3 rounded-xl">
+                <i data-lucide="folder" class="w-5 h-5"></i>
+                <span class="text-[10px] font-semibold">Devis</span>
             </button>
-            <button onclick="saveDevis('Enregistré')" class="flex-[1.5] sm:flex-1 bg-slate-900 hover:bg-slate-800 active:scale-95 text-white font-bold py-2.5 px-3 sm:px-4 rounded-xl transition flex items-center justify-center gap-1.5 text-xs sm:text-sm shadow-sm">
-                <i data-lucide="check-circle-2" class="w-4 h-4 text-amber-500"></i>
-                <span>Enregistrer</span>
+            <button onclick="showTab('ereporting')" id="tab-btn-ereporting" class="flex flex-col items-center gap-0.5 text-slate-400 py-1 px-3 rounded-xl">
+                <i data-lucide="file-check-2" class="w-5 h-5"></i>
+                <span class="text-[10px] font-semibold">Fiscal</span>
+            </button>
+            <button onclick="showTab('tarifs')" id="tab-btn-tarifs" class="flex flex-col items-center gap-0.5 text-slate-400 py-1 px-3 rounded-xl">
+                <i data-lucide="zap" class="w-5 h-5"></i>
+                <span class="text-[10px] font-semibold">Pro</span>
+            </button>
+            <button onclick="showTab('settings')" id="tab-btn-settings" class="flex flex-col items-center gap-0.5 text-slate-400 py-1 px-3 rounded-xl">
+                <i data-lucide="user" class="w-5 h-5"></i>
+                <span class="text-[10px] font-semibold">Profil</span>
             </button>
         </div>
     </div>
 
-    <footer class="bg-white border-t border-slate-200/80 py-4 text-center text-xs text-slate-400 no-print">
-        Dicta'Devis — Solution de devis BTP vocaux conformes.
-    </footer>
-
-    <!-- GABARIT D'IMPRESSION DU PDF -->
+    <!-- GABARIT PDF -->
     <div id="pdf-print-zone" class="hidden">
         <div class="border-b border-slate-300 pb-4 mb-6 flex justify-between items-start">
             <div>
@@ -358,7 +380,7 @@
                 <p class="text-xs text-slate-600" id="pdf-insurance">Décennale : -</p>
             </div>
             <div class="text-right">
-                <h2 class="text-xl font-black text-amber-600 uppercase">Devis BTP</h2>
+                <h2 class="text-xl font-black text-brand-600 uppercase">Devis BTP</h2>
                 <p class="text-xs text-slate-500" id="pdf-date">Date : -</p>
             </div>
         </div>
@@ -387,13 +409,13 @@
             <div class="w-1/2 space-y-2 text-xs">
                 <div class="flex justify-between text-slate-600"><span>Total HT :</span><span id="pdf-total-ht">0.00 €</span></div>
                 <div class="flex justify-between text-slate-600"><span>TVA :</span><span id="pdf-total-tva">0.00 €</span></div>
-                <div class="flex justify-between font-bold text-base border-t border-slate-300 pt-2 text-slate-900"><span>TOTAL TTC :</span><span id="pdf-total-ttc" class="text-amber-600">0.00 €</span></div>
+                <div class="flex justify-between font-bold text-base border-t border-slate-300 pt-2 text-slate-900"><span>TOTAL TTC :</span><span id="pdf-total-ttc" class="text-brand-600">0.00 €</span></div>
             </div>
         </div>
 
         <div class="border-t border-slate-200 pt-6 text-xs text-slate-500 text-center space-y-2">
             <p>Mentions légales : Devis valable 30 jours à compter de son émission.</p>
-            <p class="font-semibold text-slate-700">Bon pour accord et signature du client (Précédé de la mention manuscrite "Bon pour accord") :</p>
+            <p class="font-semibold text-slate-700">Bon pour accord et signature du client :</p>
             <div class="h-16 border border-dashed border-slate-300 rounded-lg max-w-xs mx-auto mt-2"></div>
         </div>
     </div>
@@ -401,7 +423,25 @@
     <script>
         lucide.createIcons();
 
-        // GESTION DE L'ESSAI GRATUIT DE 14 JOURS
+        // INTEGRATION STRIPE
+        const STRIPE_PUBLIC_KEY = 'pk_test_TYooMQauvdEDq54NiTphI7jx'; // Remplacez par votre clé publique Stripe
+        let stripe = null;
+        if (typeof Stripe !== 'undefined') {
+            stripe = Stripe(STRIPE_PUBLIC_KEY);
+        }
+
+        function redirectToStripeCheckout() {
+            // Remplacez cette URL par votre lien Stripe Checkout créé dans votre Dashboard Stripe
+            const STRIPE_PAYMENT_LINK = "https://buy.stripe.com/test_14k3cT6qnbvH35S000"; 
+            
+            if (STRIPE_PAYMENT_LINK.includes("buy.stripe.com")) {
+                window.location.href = STRIPE_PAYMENT_LINK;
+            } else {
+                alert("Redirection vers le paiement Stripe sécurisé (Mode Démo)...");
+            }
+        }
+
+        // GESTION D'ESSAI 14 JOURS
         function initTrialSystem() {
             const trialDays = 14;
             let startDate = localStorage.getItem('dictadevis_trial_start');
@@ -413,21 +453,15 @@
 
             const start = new Date(startDate);
             const now = new Date();
-            const diffTime = now - start;
-            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            const diffDays = Math.floor((now - start) / (1000 * 60 * 60 * 24));
             const daysLeft = trialDays - diffDays;
 
-            const banner = document.getElementById('trial-banner');
             const trialText = document.getElementById('trial-text');
-
             if (daysLeft > 0) {
-                trialText.innerText = `Période d'essai gratuite active : il vous reste ${daysLeft} jour(s).`;
+                trialText.innerText = `Période d'essai 14 jours : il vous reste ${daysLeft} jour(s)`;
             } else {
-                trialText.innerText = "Votre période d'essai de 14 jours est expirée.";
-                banner.classList.remove('from-amber-500', 'to-amber-600');
-                banner.classList.add('bg-rose-600', 'text-white');
+                trialText.innerText = "Période d'essai terminée";
             }
-
             return daysLeft > 0;
         }
 
@@ -440,6 +474,17 @@
         let items = [];
         let devisList = JSON.parse(localStorage.getItem('dictadevis_data') || '[]');
 
+        function loadDemoData() {
+            document.getElementById('client-name').value = 'Jean Dupont';
+            document.getElementById('client-phone').value = '06 12 34 56 78';
+            document.getElementById('client-email').value = 'j.dupont@email.fr';
+            items = [
+                { designation: "Pose d'un tableau électrique Schneider 3 rangées", quantite: 1, prix: 450, tva: 10 },
+                { designation: "Installation de prises Céliane Legrand", quantite: 5, prix: 30, tva: 10 }
+            ];
+            renderItems();
+        }
+
         function resetForm() {
             document.getElementById('client-name').value = '';
             document.getElementById('client-phone').value = '';
@@ -448,7 +493,7 @@
             renderItems();
             const status = document.getElementById('mic-status');
             status.innerText = "Appuyez et dictez votre chantier";
-            status.className = "text-slate-800 font-bold tracking-tight text-base sm:text-lg mb-1";
+            status.className = "text-slate-900 font-bold tracking-tight text-lg sm:text-xl mb-1";
         }
 
         function renderItems() {
@@ -459,7 +504,7 @@
             let totalTVA = 0;
 
             if (items.length === 0) {
-                container.innerHTML = '<div class="text-center py-6 text-slate-400 text-xs italic bg-slate-50 rounded-2xl border border-dashed border-slate-200/80">Aucune prestation. Dictez à la voix ou cliquez sur "Ajouter une ligne".</div>';
+                container.innerHTML = '<div class="text-center py-5 text-slate-400 text-xs italic bg-slate-50 rounded-2xl border border-dashed border-slate-200">Aucune prestation. Dictez ou appuyez sur "Ajouter une ligne".</div>';
             } else {
                 items.forEach((item, index) => {
                     const itemHT = (item.quantite || 0) * (item.prix || 0);
@@ -468,23 +513,23 @@
                     totalTVA += itemTVA;
 
                     const row = document.createElement('div');
-                    row.className = 'bg-slate-50 p-3 rounded-2xl border border-slate-200/70 flex flex-col sm:flex-row items-start sm:items-center gap-2.5';
+                    row.className = 'bg-slate-50 p-2.5 rounded-2xl border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center gap-2';
                     row.innerHTML = `
-                        <input type="text" value="${item.designation || ''}" onchange="updateItem(${index}, 'designation', this.value)" placeholder="Description prestation" class="flex-1 bg-white border border-slate-200/80 rounded-xl px-3 py-1.5 text-sm text-slate-900 font-medium focus:outline-none focus:border-amber-500 w-full transition">
+                        <input type="text" value="${item.designation || ''}" onchange="updateItem(${index}, 'designation', this.value)" placeholder="Prestation" class="flex-1 bg-white border border-slate-200/80 rounded-xl px-3 py-1.5 text-sm font-medium focus:outline-none focus:border-brand-600 w-full">
                         
                         <div class="flex items-center gap-2 w-full sm:w-auto">
                             <div class="flex items-center gap-1">
-                                <span class="text-xs text-slate-400">Qté:</span>
-                                <input type="number" value="${item.quantite || 1}" onchange="updateItem(${index}, 'quantite', parseFloat(this.value))" class="w-16 bg-white border border-slate-200/80 rounded-xl px-2 py-1.5 text-sm font-medium text-center text-slate-900 focus:outline-none focus:border-amber-500 transition">
+                                <span class="text-[11px] text-slate-400">Qté:</span>
+                                <input type="number" value="${item.quantite || 1}" onchange="updateItem(${index}, 'quantite', parseFloat(this.value))" class="w-14 bg-white border border-slate-200/80 rounded-xl px-2 py-1.5 text-sm font-medium text-center focus:outline-none">
                             </div>
 
                             <div class="flex items-center gap-1">
-                                <span class="text-xs text-slate-400">HT:</span>
-                                <input type="number" value="${item.prix || 0}" onchange="updateItem(${index}, 'prix', parseFloat(this.value))" class="w-24 bg-white border border-slate-200/80 rounded-xl px-2 py-1.5 text-sm font-medium text-right text-slate-900 focus:outline-none focus:border-amber-500 transition">
+                                <span class="text-[11px] text-slate-400">HT:</span>
+                                <input type="number" value="${item.prix || 0}" onchange="updateItem(${index}, 'prix', parseFloat(this.value))" class="w-20 bg-white border border-slate-200/80 rounded-xl px-2 py-1.5 text-sm font-medium text-right focus:outline-none">
                                 <span class="text-xs text-slate-400">€</span>
                             </div>
 
-                            <select onchange="updateItem(${index}, 'tva', parseFloat(this.value))" class="bg-white border border-slate-200/80 rounded-xl px-2 py-1.5 text-xs font-semibold text-slate-700 focus:outline-none">
+                            <select onchange="updateItem(${index}, 'tva', parseFloat(this.value))" class="bg-white border border-slate-200/80 rounded-xl px-2 py-1.5 text-xs font-semibold focus:outline-none">
                                 <option value="5.5" ${item.tva === 5.5 ? 'selected' : ''}>5.5%</option>
                                 <option value="10" ${item.tva === 10 ? 'selected' : ''}>10%</option>
                                 <option value="20" ${item.tva === 20 ? 'selected' : ''}>20%</option>
@@ -506,48 +551,26 @@
             lucide.createIcons();
         }
 
-        function updateItem(index, field, value) {
-            items[index][field] = value;
-            renderItems();
-        }
-
-        function addLine() {
-            items.push({ designation: "", quantite: 1, prix: 0, tva: 10 });
-            renderItems();
-        }
-
-        function removeItem(index) {
-            items.splice(index, 1);
-            renderItems();
-        }
+        function updateItem(index, field, value) { items[index][field] = value; renderItems(); }
+        function addLine() { items.push({ designation: "", quantite: 1, prix: 0, tva: 10 }); renderItems(); }
+        function removeItem(index) { items.splice(index, 1); renderItems(); }
 
         function downloadPDF() {
             const clientName = document.getElementById('client-name').value || 'Client';
-            const clientPhone = document.getElementById('client-phone').value || '-';
-            const clientEmail = document.getElementById('client-email').value || '-';
-            
             document.getElementById('pdf-company-name').innerText = document.getElementById('company-name').value;
             document.getElementById('pdf-company-siret').innerText = 'SIRET : ' + document.getElementById('company-siret').value;
-            document.getElementById('pdf-insurance').innerText = 'Décennale : ' + document.getElementById('insurance-name').value + ' (' + document.getElementById('insurance-num').value + ')';
+            document.getElementById('pdf-insurance').innerText = 'Décennale : ' + document.getElementById('insurance-name').value;
             document.getElementById('pdf-date').innerText = 'Date : ' + new Date().toLocaleDateString('fr-FR');
-
             document.getElementById('pdf-client-name').innerText = clientName;
-            document.getElementById('pdf-client-phone').innerText = 'Tél : ' + clientPhone;
-            document.getElementById('pdf-client-email').innerText = 'Email : ' + clientEmail;
+            document.getElementById('pdf-client-phone').innerText = 'Tél : ' + (document.getElementById('client-phone').value || '-');
+            document.getElementById('pdf-client-email').innerText = 'Email : ' + (document.getElementById('client-email').value || '-');
 
             const tbody = document.getElementById('pdf-items-body');
             tbody.innerHTML = '';
-            
             items.forEach(item => {
                 const itemHT = (item.quantite || 0) * (item.prix || 0);
                 const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="p-3">${item.designation || '-'}</td>
-                    <td class="p-3 text-center">${item.quantite || 0}</td>
-                    <td class="p-3 text-right">${(item.prix || 0).toFixed(2)} €</td>
-                    <td class="p-3 text-right">${item.tva || 0}%</td>
-                    <td class="p-3 text-right font-bold">${itemHT.toFixed(2)} €</td>
-                `;
+                tr.innerHTML = `<td class="p-3">${item.designation || '-'}</td><td class="p-3 text-center">${item.quantite || 0}</td><td class="p-3 text-right">${(item.prix || 0).toFixed(2)} €</td><td class="p-3 text-right">${item.tva || 0}%</td><td class="p-3 text-right font-bold">${itemHT.toFixed(2)} €</td>`;
                 tbody.appendChild(tr);
             });
 
@@ -557,9 +580,7 @@
 
             const printZone = document.getElementById('pdf-print-zone');
             printZone.classList.remove('hidden');
-            
             window.print();
-
             setTimeout(() => { printZone.classList.add('hidden'); }, 500);
         }
 
@@ -567,23 +588,15 @@
             const client = document.getElementById('client-name').value || 'Client';
             const email = document.getElementById('client-email').value;
             const total = document.getElementById('total-ttc').innerText;
-            
-            if (!email) {
-                alert("Veuillez renseigner l'email du client avant d'envoyer.");
-                return;
-            }
-
-            alert("N'oubliez pas d'attacher le fichier PDF téléchargé à votre email avant d'envoyer !");
-
+            if (!email) { alert("Veuillez renseigner l'email du client."); return; }
             const subject = encodeURIComponent(`Votre Devis BTP — ${client}`);
-            const body = encodeURIComponent(`Bonjour ${client},\n\nVeuillez trouver ci-joint votre devis BTP d'un montant total de ${total}.\n\nRestant à votre entière disposition pour toute question,\n\nCordialement.`);
-            
+            const body = encodeURIComponent(`Bonjour ${client},\n\nVeuillez trouver ci-joint votre devis d'un montant de ${total}.\n\nCordialement.`);
             window.open(`mailto:${email}?subject=${subject}&body=${body}`, '_blank');
         }
 
         async function toggleRecording() {
             if (!initTrialSystem()) {
-                alert("Votre période d'essai de 14 jours est terminée. Veuillez souscrire à l'offre Pro pour continuer à générer des devis.");
+                alert("Votre période d'essai de 14 jours est écoulée. Passez à l'offre Pro pour continuer.");
                 showTab('tarifs');
                 return;
             }
@@ -598,54 +611,33 @@
                     mediaRecorder = new MediaRecorder(stream);
                     audioChunks = [];
 
-                    mediaRecorder.ondataavailable = event => {
-                        if (event.data.size > 0) {
-                            audioChunks.push(event.data);
-                        }
-                    };
+                    mediaRecorder.ondataavailable = event => { if (event.data.size > 0) audioChunks.push(event.data); };
 
                     mediaRecorder.onstop = async () => {
                         const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                        status.innerText = "Analyse et structuration IA en cours...";
-                        status.className = "text-amber-600 font-bold tracking-tight text-base sm:text-lg mb-1";
+                        status.innerText = "Analyse IA en cours...";
+                        status.className = "text-brand-600 font-bold tracking-tight text-lg sm:text-xl mb-1";
 
                         try {
-                            const response = await fetch('/api/transcribe', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'audio/webm' },
-                                body: audioBlob
-                            });
-                            
+                            const response = await fetch('/api/transcribe', { method: 'POST', headers: { 'Content-Type': 'audio/webm' }, body: audioBlob });
                             const result = await response.json();
-
                             if (result.success && result.data) {
-                                if (result.data.clientName && result.data.clientName !== "Inconnu") {
-                                    document.getElementById('client-name').value = result.data.clientName;
-                                }
-                                if (result.data.items && result.data.items.length > 0) {
-                                    items = result.data.items;
-                                    renderItems();
-                                }
-                                status.innerText = "Devis généré avec succès !";
-                                status.className = "text-emerald-600 font-bold tracking-tight text-base sm:text-lg mb-1";
-                            } else {
-                                const errMsg = result.details || result.error || "Problème d'analyse";
-                                status.innerText = "Erreur : " + errMsg;
-                                status.className = "text-rose-600 font-bold text-sm mb-1";
+                                if (result.data.clientName && result.data.clientName !== "Inconnu") document.getElementById('client-name').value = result.data.clientName;
+                                if (result.data.items && result.data.items.length > 0) { items = result.data.items; renderItems(); }
+                                status.innerText = "Devis prêt !";
+                                status.className = "text-emerald-600 font-bold tracking-tight text-lg sm:text-xl mb-1";
                             }
                         } catch (err) {
-                            console.error(err);
-                            status.innerText = "Erreur de connexion serveur.";
-                            status.className = "text-rose-600 font-bold text-sm mb-1";
+                            status.innerText = "Serveur non connecté. Utilisez l'exemple de devis.";
+                            status.className = "text-rose-600 font-bold text-xs mb-1";
                         }
                     };
 
                     mediaRecorder.start();
                     isRecording = true;
-                    btn.classList.add('pulse-animation', 'bg-rose-500');
-                    btn.classList.remove('bg-amber-500');
-                    status.innerText = "Enregistrement en cours... Parlez clairement";
-                    status.className = "text-slate-800 font-bold tracking-tight text-base sm:text-lg mb-1";
+                    btn.classList.add('pulse-recording', 'bg-rose-600');
+                    btn.classList.remove('bg-brand-600');
+                    status.innerText = "Écoute en cours... Dictez les prestations";
                     timer.classList.remove('hidden');
 
                     timerSeconds = 0;
@@ -656,40 +648,47 @@
                         timer.innerText = `${mins}:${secs}`;
                     }, 1000);
 
-                } catch (err) {
-                    alert("Veuillez autoriser l'accès au microphone pour dicter vos devis.");
-                }
-
+                } catch (err) { alert("Autorisez l'accès au micro."); }
             } else {
                 isRecording = false;
-                if (mediaRecorder && mediaRecorder.state !== "inactive") {
-                    mediaRecorder.stop();
-                }
-                btn.classList.remove('pulse-animation', 'bg-rose-500');
-                btn.classList.add('bg-amber-500');
+                if (mediaRecorder && mediaRecorder.state !== "inactive") mediaRecorder.stop();
+                btn.classList.remove('pulse-recording', 'bg-rose-600');
+                btn.classList.add('bg-brand-600');
                 clearInterval(recordingTimer);
             }
         }
 
         function showTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.nav-btn').forEach(el => {
-                el.classList.remove('bg-amber-500', 'text-slate-950', 'shadow-sm', 'font-semibold');
-                el.classList.add('text-slate-600', 'font-medium');
+            
+            // Mise à jour styles desktop
+            document.querySelectorAll('.nav-btn-desktop').forEach(el => {
+                el.classList.remove('bg-brand-600', 'text-white', 'shadow-sm');
+                el.classList.add('text-slate-600');
+            });
+
+            // Mise à jour styles tab bar mobile
+            const tabs = ['app', 'admin', 'ereporting', 'tarifs', 'settings'];
+            tabs.forEach(t => {
+                const mobileBtn = document.getElementById(`tab-btn-${t}`);
+                if (mobileBtn) {
+                    mobileBtn.classList.remove('text-brand-600');
+                    mobileBtn.classList.add('text-slate-400');
+                }
             });
 
             document.getElementById(`tab-${tabName}`).classList.remove('hidden');
-            const activeNav = document.getElementById(`nav-${tabName}`);
-            if(activeNav) {
-                activeNav.classList.add('bg-amber-500', 'text-slate-950', 'shadow-sm', 'font-semibold');
-                activeNav.classList.remove('text-slate-600', 'font-medium');
+            
+            const activeDesktop = document.getElementById(`nav-${tabName}-desktop`);
+            if (activeDesktop) {
+                activeDesktop.classList.add('bg-brand-600', 'text-white', 'shadow-sm');
+                activeDesktop.classList.remove('text-slate-600');
             }
 
-            const bottomBar = document.getElementById('sticky-bottom-actions');
-            if (tabName === 'app') {
-                bottomBar.classList.remove('hidden');
-            } else {
-                bottomBar.classList.add('hidden');
+            const activeMobile = document.getElementById(`tab-btn-${tabName}`);
+            if (activeMobile) {
+                activeMobile.classList.add('text-brand-600');
+                activeMobile.classList.remove('text-slate-400');
             }
 
             if (tabName === 'admin') renderAdminTable();
@@ -698,21 +697,16 @@
 
         function saveDevis(statut) {
             const client = document.getElementById('client-name').value || 'Client Inconnu';
-            const phone = document.getElementById('client-phone').value || '';
-            const email = document.getElementById('client-email').value || '';
             const totalTTC = document.getElementById('total-ttc').innerText;
 
-            if (items.length === 0) {
-                alert("Veuillez ajouter au moins une prestation avant d'enregistrer.");
-                return;
-            }
+            if (items.length === 0) { alert("Ajoutez au moins une prestation."); return; }
 
             const newDevis = {
                 id: 'DEV-' + Math.floor(1000 + Math.random() * 9000),
                 date: new Date().toLocaleDateString('fr-FR'),
                 client: client,
-                phone: phone,
-                email: email,
+                phone: document.getElementById('client-phone').value || '',
+                email: document.getElementById('client-email').value || '',
                 total: totalTTC,
                 statut: statut,
                 ereportingStatus: 'À Transmettre'
@@ -721,7 +715,6 @@
             devisList.unshift(newDevis);
             localStorage.setItem('dictadevis_data', JSON.stringify(devisList));
             alert(`Devis enregistré dans "Mes Devis" !`);
-            
             resetForm();
             showTab('admin');
         }
@@ -729,43 +722,35 @@
         function renderAdminTable() {
             const body = document.getElementById('devis-table-body');
             body.innerHTML = '';
-
-            let totalCount = devisList.length;
             let signedAmount = 0;
 
             if (devisList.length === 0) {
-                body.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-slate-400 italic">Aucun devis enregistré pour le moment.</td></tr>';
+                body.innerHTML = '<tr><td colspan="4" class="p-5 text-center text-slate-400 italic">Aucun devis enregistré.</td></tr>';
             } else {
                 devisList.forEach((d, index) => {
                     signedAmount += parseFloat(d.total.replace(' €', ''));
-
                     const row = document.createElement('tr');
                     row.className = 'hover:bg-slate-50 transition';
                     row.innerHTML = `
-                        <td class="p-3.5 text-slate-500 font-medium">${d.date}</td>
-                        <td class="p-3.5 font-bold text-slate-900">${d.client}</td>
-                        <td class="p-3.5 font-extrabold text-amber-600">${d.total}</td>
-                        <td class="p-3.5 text-right space-x-2">
-                            <button onclick="relancerClientSMS(${index})" class="bg-amber-50 text-amber-700 border border-amber-200/80 hover:bg-amber-100 text-xs font-semibold px-3 py-1.5 rounded-lg transition inline-flex items-center gap-1">
-                                <i data-lucide="smartphone" class="w-3.5 h-3.5"></i> SMS
-                            </button>
-                            <button onclick="deleteDevis(${index})" class="bg-rose-50 text-rose-600 border border-rose-200/80 hover:bg-rose-100 text-xs font-semibold px-2 py-1.5 rounded-lg transition inline-flex">
-                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                            </button>
+                        <td class="p-3 text-slate-500 font-medium">${d.date}</td>
+                        <td class="p-3 font-bold text-slate-900">${d.client}</td>
+                        <td class="p-3 font-extrabold text-emerald-600">${d.total}</td>
+                        <td class="p-3 text-right space-x-1">
+                            <button onclick="relancerClientSMS(${index})" class="bg-brand-50 text-brand-700 hover:bg-brand-100 text-xs font-semibold px-2 py-1 rounded-lg transition inline-flex items-center gap-1">SMS</button>
+                            <button onclick="deleteDevis(${index})" class="bg-rose-50 text-rose-600 hover:bg-rose-100 text-xs font-semibold px-2 py-1 rounded-lg transition inline-flex"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
                         </td>
                     `;
                     body.appendChild(row);
                 });
             }
 
-            document.getElementById('stat-total-count').innerText = totalCount;
+            document.getElementById('stat-total-count').innerText = devisList.length;
             document.getElementById('stat-signed-amount').innerText = signedAmount.toFixed(2) + ' €';
             lucide.createIcons();
         }
 
         function deleteDevis(index) {
-            const devis = devisList[index];
-            if (confirm(`Supprimer le devis de ${devis.client} (${devis.total}) ?`)) {
+            if (confirm(`Supprimer le devis de ${devisList[index].client} ?`)) {
                 devisList.splice(index, 1);
                 localStorage.setItem('dictadevis_data', JSON.stringify(devisList));
                 renderAdminTable();
@@ -774,30 +759,26 @@
 
         function relancerClientSMS(index) {
             const devis = devisList[index];
-            const msg = encodeURIComponent(`Bonjour ${devis.client}, je vous relance concernant le devis BTP d'un montant de ${devis.total} envoyé par email. Avez-vous pu le consulter ? Restant à votre disposition si vous avez des questions !`);
+            const msg = encodeURIComponent(`Bonjour ${devis.client}, je vous relance concernant le devis BTP d'un montant de ${devis.total}. Restant à votre disposition si besoin !`);
             window.open(`sms:${devis.phone}?body=${msg}`, '_blank');
         }
 
         function renderEReportingTable() {
             const container = document.getElementById('ereporting-list');
             container.innerHTML = '';
-
             if (devisList.length === 0) {
-                container.innerHTML = '<div class="text-center py-6 text-slate-400 text-sm">Aucune transaction B2C enregistrée.</div>';
+                container.innerHTML = '<div class="text-center py-5 text-slate-400 text-xs">Aucune transaction B2C.</div>';
                 return;
             }
-
             devisList.forEach(d => {
                 const item = document.createElement('div');
-                item.className = 'bg-slate-50 p-4 rounded-xl border border-slate-200/80 flex items-center justify-between';
+                item.className = 'bg-slate-50 p-3.5 rounded-xl border border-slate-200/80 flex items-center justify-between text-xs';
                 item.innerHTML = `
                     <div>
-                        <div class="font-bold text-sm text-slate-900">${d.client} (${d.id})</div>
-                        <div class="text-xs text-slate-500">${d.total} — Date: ${d.date}</div>
+                        <div class="font-bold text-slate-900">${d.client} (${d.id})</div>
+                        <div class="text-slate-500">${d.total} — Date: ${d.date}</div>
                     </div>
-                    <span class="text-xs font-semibold px-2.5 py-1 rounded-full ${d.ereportingStatus === 'Transmis' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
-                        ${d.ereportingStatus || 'À Transmettre'}
-                    </span>
+                    <span class="font-semibold px-2 py-0.5 rounded-full ${d.ereportingStatus === 'Transmis' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">${d.ereportingStatus || 'À Transmettre'}</span>
                 `;
                 container.appendChild(item);
             });
@@ -807,27 +788,17 @@
         function transmitEReporting() {
             devisList.forEach(d => { d.ereportingStatus = 'Transmis'; });
             localStorage.setItem('dictadevis_data', JSON.stringify(devisList));
-            alert('Données d\'E-Reporting télétransmises au Portail Public de Facturation (PPF) !');
+            alert('Données télétransmises au Portail Public de Facturation !');
             renderEReportingTable();
         }
 
         function downloadEReportingCSV() {
-            if (devisList.length === 0) {
-                alert("Aucun devis enregistré à exporter.");
-                return;
-            }
-
+            if (devisList.length === 0) { alert("Aucun devis à exporter."); return; }
             let csvContent = "data:text/csv;charset=utf-8,ID_Devis,Date,Client,Email,Montant_TTC,Statut_Fiscal\n";
-
-            devisList.forEach(d => {
-                const row = `${d.id},${d.date},"${d.client}",${d.email},"${d.total}",${d.ereportingStatus || 'A_Transmettre'}`;
-                csvContent += row + "\n";
-            });
-
-            const encodedUri = encodeURI(csvContent);
+            devisList.forEach(d => { csvContent += `${d.id},${d.date},"${d.client}",${d.email},"${d.total}",${d.ereportingStatus || 'A_Transmettre'}\n`; });
             const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `ereporting_export_${new Date().toISOString().slice(0,10)}.csv`);
+            link.setAttribute("href", encodeURI(csvContent));
+            link.setAttribute("download", `ereporting_${new Date().toISOString().slice(0,10)}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
