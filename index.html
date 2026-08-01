@@ -14,6 +14,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
 
+    <!-- Générateur PDF Natif (html2pdf.js) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
     <script>
         tailwind.config = {
             theme: {
@@ -23,11 +26,11 @@
                     },
                     colors: {
                         btp: {
-                            navy: '#1e3a8a',      // Bleu de travail / Marine pro
-                            navyDark: '#0f172a',  // Ardoise / Sombre
-                            amber: '#f59e0b',     // Jaune/Orange Chantier
+                            navy: '#1e3a8a',
+                            navyDark: '#0f172a',
+                            amber: '#f59e0b',
                             amberHover: '#d97706',
-                            lightBg: '#f1f5f9',   // Gris acier très clair
+                            lightBg: '#f1f5f9',
                         }
                     }
                 }
@@ -54,18 +57,12 @@
             100% { transform: scale(0.96); box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); }
         }
 
-        @media print {
-            body * { visibility: hidden; }
-            #pdf-print-zone, #pdf-print-zone * { visibility: visible; }
-            #pdf-print-zone {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                padding: 20px;
-                background: white;
-            }
-            .no-print { display: none !important; }
+        /* Style spécifique pour la zone PDF générée */
+        #pdf-template {
+            background: white;
+            color: #0f172a;
+            padding: 30px;
+            font-size: 12px;
         }
     </style>
 </head>
@@ -112,7 +109,6 @@
                 </div>
                 <p class="text-xs text-slate-500 max-w-md mb-4 font-medium">L'IA analyse vos paroles pour structurer automatiquement vos lignes de devis, quantités et tarifs.</p>
 
-                <!-- Bouton Micro Ambre Chantier -->
                 <button id="mic-btn" onclick="toggleRecording()" class="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-amber-500 text-slate-950 flex items-center justify-center shadow-lg shadow-amber-500/30 hover:bg-amber-600 transition transform active:scale-95 my-1 border-4 border-amber-400/30">
                     <i data-lucide="mic" id="mic-icon" class="w-10 h-10 sm:w-12 sm:h-12"></i>
                 </button>
@@ -358,59 +354,63 @@
         </div>
     </div>
 
-    <!-- GABARIT IMPRESSION PDF -->
-    <div id="pdf-print-zone" class="hidden">
-        <div class="border-b border-slate-300 pb-4 mb-6 flex justify-between items-start">
-            <div>
-                <h1 class="text-2xl font-bold uppercase tracking-wider text-slate-900" id="pdf-company-name">ENTREPRISE BTP</h1>
-                <p class="text-xs text-slate-600" id="pdf-company-siret">SIRET : -</p>
-                <p class="text-xs text-slate-600" id="pdf-insurance">Décennale : -</p>
+    <!-- GABARIT CACHÉ POUR GÉNÉRATION PDF -->
+    <div style="display: none;">
+        <div id="pdf-template">
+            <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #cbd5e1; padding-bottom: 12px; margin-bottom: 20px;">
+                <div>
+                    <h1 style="font-size: 20px; font-weight: 800; color: #0f172a;" id="pdf-company-name">ENTREPRISE BTP</h1>
+                    <p style="margin: 2px 0;" id="pdf-company-siret">SIRET : -</p>
+                    <p style="margin: 2px 0;" id="pdf-insurance">Décennale : -</p>
+                </div>
+                <div style="text-align: right;">
+                    <h2 style="font-size: 16px; font-weight: 800; color: #1e3a8a;">DEVIS OFFICIEL BTP</h2>
+                    <p style="margin: 2px 0;" id="pdf-date">Date : -</p>
+                </div>
             </div>
-            <div class="text-right">
-                <h2 class="text-xl font-black text-btp-navy uppercase">Devis BTP (Factur-X)</h2>
-                <p class="text-xs text-slate-500" id="pdf-date">Date : -</p>
+
+            <div style="background-color: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
+                <p style="font-size: 10px; font-weight: 700; color: #64748b; margin: 0 0 4px 0;">CLIENT :</p>
+                <p style="font-size: 14px; font-weight: 800; margin: 0;" id="pdf-client-name">-</p>
+                <p style="margin: 2px 0;" id="pdf-client-phone">-</p>
+                <p style="margin: 2px 0;" id="pdf-client-email">-</p>
             </div>
-        </div>
 
-        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 mb-6">
-            <h3 class="text-xs font-bold uppercase text-slate-400 mb-1">Client :</h3>
-            <p class="font-bold text-base text-slate-900" id="pdf-client-name">-</p>
-            <p class="text-xs text-slate-600" id="pdf-client-phone">-</p>
-            <p class="text-xs text-slate-600" id="pdf-client-email">-</p>
-        </div>
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                <thead>
+                    <tr style="background-color: #f1f5f9; border-bottom: 1px solid #cbd5e1; font-weight: 700; text-align: left;">
+                        <th style="padding: 8px;">Prestation</th>
+                        <th style="padding: 8px; text-align: center;">Qté</th>
+                        <th style="padding: 8px; text-align: right;">Prix HT</th>
+                        <th style="padding: 8px; text-align: right;">TVA</th>
+                        <th style="padding: 8px; text-align: right;">Total HT</th>
+                    </tr>
+                </thead>
+                <tbody id="pdf-items-body"></tbody>
+            </table>
 
-        <table class="w-full text-left border-collapse text-xs mb-6">
-            <thead>
-                <tr class="bg-slate-100 border-b border-slate-300 font-bold uppercase text-slate-700">
-                    <th class="p-3">Prestation</th>
-                    <th class="p-3 text-center">Qté</th>
-                    <th class="p-3 text-right">Prix HT</th>
-                    <th class="p-3 text-right">TVA</th>
-                    <th class="p-3 text-right">Total HT</th>
-                </tr>
-            </thead>
-            <tbody id="pdf-items-body" class="divide-y divide-slate-200"></tbody>
-        </table>
-
-        <div class="flex justify-end pt-4 mb-8">
-            <div class="w-1/2 space-y-2 text-xs">
-                <div class="flex justify-between text-slate-600"><span>Total HT :</span><span id="pdf-total-ht">0.00 €</span></div>
-                <div class="flex justify-between text-slate-600"><span>TVA :</span><span id="pdf-total-tva">0.00 €</span></div>
-                <div class="flex justify-between font-bold text-base border-t border-slate-300 pt-2 text-slate-900"><span>TOTAL TTC :</span><span id="pdf-total-ttc" class="text-amber-600">0.00 €</span></div>
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 30px;">
+                <div style="width: 250px;">
+                    <div style="display: flex; justify-content: space-between; padding: 4px 0;"><span>Total HT :</span><span id="pdf-total-ht">0.00 €</span></div>
+                    <div style="display: flex; justify-content: space-between; padding: 4px 0;"><span>TVA :</span><span id="pdf-total-tva">0.00 €</span></div>
+                    <div style="display: flex; justify-content: space-between; padding: 8px 0; border-top: 2px solid #0f172a; font-weight: 800; font-size: 14px;">
+                        <span>TOTAL TTC :</span><span id="pdf-total-ttc" style="color: #d97706;">0.00 €</span>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <div class="border-t border-slate-200 pt-6 text-xs text-slate-500 text-center space-y-2">
-            <p>Mentions légales : Devis valable 30 jours à compter de son émission.</p>
-            <p class="font-semibold text-slate-700">Bon pour accord et signature du client :</p>
-            <div class="h-16 border border-dashed border-slate-300 rounded-lg max-w-xs mx-auto mt-2"></div>
+            <div style="border-top: 1px solid #e2e8f0; padding-top: 12px; text-align: center; color: #64748b; font-size: 10px;">
+                <p>Mentions légales : Devis valable 30 jours à compter de son émission.</p>
+                <p style="font-weight: 700; margin-top: 8px;">Bon pour accord et signature du client :</p>
+                <div style="height: 50px; border: 1px dashed #cbd5e1; margin: 8px auto 0 auto; width: 200px; border-radius: 6px;"></div>
+            </div>
         </div>
     </div>
 
     <script>
         lucide.createIcons();
 
-        // ⚠️ REMPLACEZ PAR VOTRE URL VERCEL
+        // ⚠️ COLLES TON URL VERCEL ICI
         const BACKEND_API_URL = "https://dictadevis-api.vercel.app/api/transcribe";
 
         // INTEGRATION STRIPE
@@ -422,6 +422,54 @@
             } else {
                 alert("Le lien de paiement Stripe n'est pas configuré.");
             }
+        }
+
+        // GENERATEUR DE VRAI PDF BINAIRE
+        function downloadPDF() {
+            const clientName = document.getElementById('client-name').value || 'Client';
+            
+            // Injection des données dans la maquette PDF
+            document.getElementById('pdf-company-name').innerText = document.getElementById('company-name').value;
+            document.getElementById('pdf-company-siret').innerText = 'SIRET : ' + document.getElementById('company-siret').value;
+            document.getElementById('pdf-insurance').innerText = 'Décennale : ' + document.getElementById('insurance-name').value;
+            document.getElementById('pdf-date').innerText = 'Date : ' + new Date().toLocaleDateString('fr-FR');
+            document.getElementById('pdf-client-name').innerText = clientName;
+            document.getElementById('pdf-client-phone').innerText = 'Tél : ' + (document.getElementById('client-phone').value || '-');
+            document.getElementById('pdf-client-email').innerText = 'Email : ' + (document.getElementById('client-email').value || '-');
+
+            const tbody = document.getElementById('pdf-items-body');
+            tbody.innerHTML = '';
+            items.forEach(item => {
+                const itemHT = (item.quantite || 0) * (item.prix || 0);
+                const tr = document.createElement('tr');
+                tr.style.borderBottom = '1px solid #e2e8f0';
+                tr.innerHTML = `
+                    <td style="padding: 8px;">${item.designation || '-'}</td>
+                    <td style="padding: 8px; text-align: center;">${item.quantite || 0}</td>
+                    <td style="padding: 8px; text-align: right;">${(item.prix || 0).toFixed(2)} €</td>
+                    <td style="padding: 8px; text-align: right;">${item.tva || 0}%</td>
+                    <td style="padding: 8px; text-align: right; font-weight: 700;">${itemHT.toFixed(2)} €</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('pdf-total-ht').innerText = document.getElementById('total-ht').innerText;
+            document.getElementById('pdf-total-tva').innerText = document.getElementById('total-tva').innerText;
+            document.getElementById('pdf-total-ttc').innerText = document.getElementById('total-ttc').innerText;
+
+            // Options de génération html2pdf
+            const element = document.getElementById('pdf-template');
+            const cleanName = clientName.replace(/[^a-zA-Z0-9]/g, '_');
+            const opt = {
+                margin:       10,
+                filename:     `Devis_BTP_${cleanName}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            // Génération et téléchargement
+            html2pdf().set(opt).from(element).save();
         }
 
         // ENVOI PAR EMAIL
@@ -437,14 +485,14 @@
 
             downloadPDF();
 
-            alert(`1. Le devis PDF vient d'être téléchargé sur votre appareil.\n2. Votre application e-mail va s'ouvrir : pensez à joindre le PDF téléchargé avant d'envoyer !`);
+            alert(`1. Le vrai fichier PDF vient d'être téléchargé.\n2. Votre application e-mail s'ouvre : joignez le fichier PDF téléchargé avant de l'envoyer.`);
 
             const subject = encodeURIComponent(`Votre Devis BTP — ${client}`);
-            const body = encodeURIComponent(`Bonjour ${client},\n\nVeuillez trouver ci-joint votre devis BTP d'un montant de ${total}.\n\nRestant à votre entière disposition pour toute question,\n\nCordialement.`);
+            const body = encodeURIComponent(`Bonjour ${client},\n\nVeuillez trouver ci-joint votre devis BTP d'un montant de ${total}.\n\nRestant à votre entière disposition,\n\nCordialement.`);
             
             setTimeout(() => {
                 window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
-            }, 800);
+            }, 1000);
         }
 
         // GESTION D'ESSAI 14 JOURS
@@ -559,35 +607,6 @@
         function updateItem(index, field, value) { items[index][field] = value; renderItems(); }
         function addLine() { items.push({ designation: "", quantite: 1, prix: 0, tva: 10 }); renderItems(); }
         function removeItem(index) { items.splice(index, 1); renderItems(); }
-
-        function downloadPDF() {
-            const clientName = document.getElementById('client-name').value || 'Client';
-            document.getElementById('pdf-company-name').innerText = document.getElementById('company-name').value;
-            document.getElementById('pdf-company-siret').innerText = 'SIRET : ' + document.getElementById('company-siret').value;
-            document.getElementById('pdf-insurance').innerText = 'Décennale : ' + document.getElementById('insurance-name').value;
-            document.getElementById('pdf-date').innerText = 'Date : ' + new Date().toLocaleDateString('fr-FR');
-            document.getElementById('pdf-client-name').innerText = clientName;
-            document.getElementById('pdf-client-phone').innerText = 'Tél : ' + (document.getElementById('client-phone').value || '-');
-            document.getElementById('pdf-client-email').innerText = 'Email : ' + (document.getElementById('client-email').value || '-');
-
-            const tbody = document.getElementById('pdf-items-body');
-            tbody.innerHTML = '';
-            items.forEach(item => {
-                const itemHT = (item.quantite || 0) * (item.prix || 0);
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td class="p-3">${item.designation || '-'}</td><td class="p-3 text-center">${item.quantite || 0}</td><td class="p-3 text-right">${(item.prix || 0).toFixed(2)} €</td><td class="p-3 text-right">${item.tva || 0}%</td><td class="p-3 text-right font-bold">${itemHT.toFixed(2)} €</td>`;
-                tbody.appendChild(tr);
-            });
-
-            document.getElementById('pdf-total-ht').innerText = document.getElementById('total-ht').innerText;
-            document.getElementById('pdf-total-tva').innerText = document.getElementById('total-tva').innerText;
-            document.getElementById('pdf-total-ttc').innerText = document.getElementById('total-ttc').innerText;
-
-            const printZone = document.getElementById('pdf-print-zone');
-            printZone.classList.remove('hidden');
-            window.print();
-            setTimeout(() => { printZone.classList.add('hidden'); }, 500);
-        }
 
         // ENVOI AU MICRO-BACKEND VERCEL (IA)
         async function processTranscriptWithBackendAI(transcript) {
