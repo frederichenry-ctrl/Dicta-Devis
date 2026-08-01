@@ -57,12 +57,19 @@
             100% { transform: scale(0.96); box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); }
         }
 
-        /* Gabarit A4 strict pour html2pdf */
+        /* Gabarit A4 strict calé en haut de page */
+        #pdf-template-wrapper {
+            position: absolute;
+            left: -9999px;
+            top: 0;
+        }
+
         #pdf-template {
             width: 750px;
             background: #ffffff;
             color: #0f172a;
-            padding: 40px;
+            padding: 30px 40px;
+            margin: 0;
             font-family: 'Plus Jakarta Sans', Arial, sans-serif;
             box-sizing: border-box;
         }
@@ -299,30 +306,30 @@
         <section id="tab-settings" class="tab-content hidden space-y-5 no-print">
             <div>
                 <h1 class="text-xl font-extrabold text-slate-900">Profil Artisan</h1>
-                <p class="text-slate-500 text-xs font-medium">Informations injectées dans vos devis officiels.</p>
+                <p class="text-slate-500 text-xs font-medium">Informations conservées en mémoire et injectées dans vos devis officiels.</p>
             </div>
 
             <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-5 space-y-4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1">Raison Sociale</label>
-                        <input type="text" id="company-name" value="ElecPro Mayenne SARL" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 font-semibold">
+                        <input type="text" id="company-name" placeholder="ex: ElecPro Mayenne SARL" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 font-semibold">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1">SIRET</label>
-                        <input type="text" id="company-siret" value="89234567800012" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 font-semibold">
+                        <input type="text" id="company-siret" placeholder="ex: 89234567800012" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 font-semibold">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1">Assureur Décennale</label>
-                        <input type="text" id="insurance-name" value="AXA France BTP" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 font-semibold">
+                        <input type="text" id="insurance-name" placeholder="ex: AXA France BTP" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 font-semibold">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1">N° Contrat Décennale</label>
-                        <input type="text" id="insurance-num" value="DEC-2026-99482" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 font-semibold">
+                        <input type="text" id="insurance-num" placeholder="ex: DEC-2026-99482" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 font-semibold">
                     </div>
                 </div>
-                <button onclick="alert('Paramètres enregistrés !')" class="bg-btp-navy hover:bg-blue-900 text-white font-bold text-xs px-4 py-2 rounded-xl transition shadow-sm">
-                    Enregistrer les paramètres
+                <button onclick="saveProfileData()" class="bg-btp-navy hover:bg-blue-900 text-white font-bold text-xs px-4 py-2 rounded-xl transition shadow-sm flex items-center gap-1.5">
+                    <i data-lucide="save" class="w-4 h-4 text-amber-400"></i> Enregistrer les paramètres
                 </button>
             </div>
         </section>
@@ -356,55 +363,55 @@
     </div>
 
     <!-- GABARIT CACHÉ POUR GÉNÉRATION PDF -->
-    <div style="position: absolute; left: -9999px; top: -9999px;">
+    <div id="pdf-template-wrapper">
         <div id="pdf-template">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #1e3a8a; padding-bottom: 12px; margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #1e3a8a; padding-bottom: 12px; margin-bottom: 20px;">
                 <div>
-                    <h1 style="font-size: 22px; font-weight: 800; color: #1e3a8a; margin: 0 0 4px 0;" id="pdf-company-name">ENTREPRISE BTP</h1>
+                    <h1 style="font-size: 20px; font-weight: 800; color: #1e3a8a; margin: 0 0 4px 0;" id="pdf-company-name">ENTREPRISE BTP</h1>
                     <p style="margin: 2px 0; font-size: 11px; color: #475569;" id="pdf-company-siret">SIRET : -</p>
                     <p style="margin: 2px 0; font-size: 11px; color: #475569;" id="pdf-insurance">Décennale : -</p>
                 </div>
                 <div style="text-align: right;">
-                    <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin: 0 0 4px 0;">DEVIS PRESTATIF</h2>
-                    <p style="margin: 2px 0; font-size: 12px; font-weight: 700; color: #1e3a8a;" id="pdf-devis-number">N° DEVIS : -</p>
+                    <h2 style="font-size: 16px; font-weight: 800; color: #0f172a; margin: 0 0 4px 0;">DEVIS PRESTATIF</h2>
+                    <p style="margin: 2px 0; font-size: 11px; font-weight: 700; color: #1e3a8a;" id="pdf-devis-number">N° DEVIS : -</p>
                     <p style="margin: 2px 0; font-size: 11px; color: #64748b;" id="pdf-date">Date : -</p>
                 </div>
             </div>
 
-            <div style="background-color: #f8fafc; padding: 14px; border-radius: 8px; margin-bottom: 24px; border: 1px solid #e2e8f0;">
+            <div style="background-color: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
                 <p style="font-size: 10px; font-weight: 700; color: #64748b; margin: 0 0 4px 0; text-transform: uppercase;">DESTINATAIRE :</p>
-                <p style="font-size: 14px; font-weight: 800; color: #0f172a; margin: 0 0 2px 0;" id="pdf-client-name">-</p>
+                <p style="font-size: 13px; font-weight: 800; color: #0f172a; margin: 0 0 2px 0;" id="pdf-client-name">-</p>
                 <p style="margin: 2px 0; font-size: 11px; color: #475569;" id="pdf-client-phone">-</p>
                 <p style="margin: 2px 0; font-size: 11px; color: #475569;" id="pdf-client-email">-</p>
             </div>
 
-            <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 11px;">
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11px;">
                 <thead>
                     <tr style="background-color: #f1f5f9; border-bottom: 2px solid #cbd5e1; color: #1e3a8a; font-weight: 800; text-align: left;">
-                        <th style="padding: 10px; width: 50%;">Désignation des prestations</th>
-                        <th style="padding: 10px; text-align: center; width: 10%;">Qté</th>
-                        <th style="padding: 10px; text-align: right; width: 15%;">Prix HT</th>
-                        <th style="padding: 10px; text-align: right; width: 10%;">TVA</th>
-                        <th style="padding: 10px; text-align: right; width: 15%;">Total HT</th>
+                        <th style="padding: 8px; width: 50%;">Désignation des prestations</th>
+                        <th style="padding: 8px; text-align: center; width: 10%;">Qté</th>
+                        <th style="padding: 8px; text-align: right; width: 15%;">Prix HT</th>
+                        <th style="padding: 8px; text-align: right; width: 10%;">TVA</th>
+                        <th style="padding: 8px; text-align: right; width: 15%;">Total HT</th>
                     </tr>
                 </thead>
                 <tbody id="pdf-items-body"></tbody>
             </table>
 
-            <div style="display: flex; justify-content: flex-end; margin-bottom: 30px;">
-                <div style="width: 260px; background-color: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <div style="display: flex; justify-content: space-between; padding: 3px 0; font-size: 11px; color: #475569;"><span>Total HT :</span><span id="pdf-total-ht" style="font-weight: 600;">0.00 €</span></div>
-                    <div style="display: flex; justify-content: space-between; padding: 3px 0; font-size: 11px; color: #475569;"><span>Montant TVA :</span><span id="pdf-total-tva" style="font-weight: 600;">0.00 €</span></div>
-                    <div style="display: flex; justify-content: space-between; padding: 8px 0 0 0; border-top: 2px solid #1e3a8a; font-weight: 800; font-size: 14px; color: #0f172a; margin-top: 4px;">
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 24px;">
+                <div style="width: 250px; background-color: #f8fafc; padding: 10px 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <div style="display: flex; justify-content: space-between; padding: 2px 0; font-size: 11px; color: #475569;"><span>Total HT :</span><span id="pdf-total-ht" style="font-weight: 600;">0.00 €</span></div>
+                    <div style="display: flex; justify-content: space-between; padding: 2px 0; font-size: 11px; color: #475569;"><span>Montant TVA :</span><span id="pdf-total-tva" style="font-weight: 600;">0.00 €</span></div>
+                    <div style="display: flex; justify-content: space-between; padding: 6px 0 0 0; border-top: 2px solid #1e3a8a; font-weight: 800; font-size: 13px; color: #0f172a; margin-top: 4px;">
                         <span>TOTAL TTC :</span><span id="pdf-total-ttc" style="color: #d97706;">0.00 €</span>
                     </div>
                 </div>
             </div>
 
-            <div style="border-top: 1px solid #e2e8f0; padding-top: 14px; text-align: center; color: #64748b; font-size: 10px;">
+            <div style="border-top: 1px solid #e2e8f0; padding-top: 12px; text-align: center; color: #64748b; font-size: 10px;">
                 <p style="margin: 0 0 4px 0;">Mentions légales : Devis valable 30 jours à compter de son émission. Règlement selon conditions convenues.</p>
-                <p style="font-weight: 700; color: #0f172a; margin: 10px 0 4px 0;">Bon pour accord et signature du client :</p>
-                <div style="height: 55px; border: 1px dashed #cbd5e1; margin: 6px auto 0 auto; width: 220px; border-radius: 6px; background-color: #fafafa;"></div>
+                <p style="font-weight: 700; color: #0f172a; margin: 8px 0 4px 0;">Bon pour accord et signature du client :</p>
+                <div style="height: 50px; border: 1px dashed #cbd5e1; margin: 4px auto 0 auto; width: 200px; border-radius: 6px; background-color: #fafafa;"></div>
             </div>
         </div>
     </div>
@@ -426,7 +433,38 @@
             }
         }
 
-        // GENERATEUR NUMERO ET NOM DE DEVIS
+        // GESTION DU PROFIL ARTISAN (SAUVEGARDE ET CHARGEMENT)
+        function saveProfileData() {
+            const profile = {
+                companyName: document.getElementById('company-name').value,
+                companySiret: document.getElementById('company-siret').value,
+                insuranceName: document.getElementById('insurance-name').value,
+                insuranceNum: document.getElementById('insurance-num').value
+            };
+            localStorage.setItem('dictadevis_profile_data', JSON.stringify(profile));
+            alert('Paramètres de votre entreprise enregistrés avec succès !');
+        }
+
+        function loadProfileData() {
+            const saved = localStorage.getItem('dictadevis_profile_data');
+            if (saved) {
+                try {
+                    const profile = JSON.parse(saved);
+                    if (profile.companyName) document.getElementById('company-name').value = profile.companyName;
+                    if (profile.companySiret) document.getElementById('company-siret').value = profile.companySiret;
+                    if (profile.insuranceName) document.getElementById('insurance-name').value = profile.insuranceName;
+                    if (profile.insuranceNum) document.getElementById('insurance-num').value = profile.insuranceNum;
+                } catch(e) { console.error("Erreur chargement profil", e); }
+            } else {
+                // Valeurs par défaut uniquement lors de la toute première utilisation
+                document.getElementById('company-name').value = "ElecPro Mayenne SARL";
+                document.getElementById('company-siret').value = "89234567800012";
+                document.getElementById('insurance-name').value = "AXA France BTP";
+                document.getElementById('insurance-num').value = "DEC-2026-99482";
+            }
+        }
+
+        // GENERATEUR METADONNEES DEVIS
         function getDevisMetadata() {
             const now = new Date();
             const year = now.getFullYear();
@@ -442,13 +480,18 @@
             return { devisId, fileName, clientName, dateStr: `${day}/${month}/${year}` };
         }
 
-        // GENERATEUR DE PDF NORMÉ A4
+        // GENERATEUR DE PDF CALE EN HAUT
         function downloadPDF() {
             const meta = getDevisMetadata();
 
-            document.getElementById('pdf-company-name').innerText = document.getElementById('company-name').value;
-            document.getElementById('pdf-company-siret').innerText = 'SIRET : ' + document.getElementById('company-siret').value;
-            document.getElementById('pdf-insurance').innerText = 'Décennale : ' + document.getElementById('insurance-name').value;
+            const compName = document.getElementById('company-name').value || '-';
+            const compSiret = document.getElementById('company-siret').value || '-';
+            const insName = document.getElementById('insurance-name').value || '-';
+            const insNum = document.getElementById('insurance-num').value || '';
+
+            document.getElementById('pdf-company-name').innerText = compName;
+            document.getElementById('pdf-company-siret').innerText = 'SIRET : ' + compSiret;
+            document.getElementById('pdf-insurance').innerText = 'Décennale : ' + insName + (insNum ? ' (' + insNum + ')' : '');
             document.getElementById('pdf-devis-number').innerText = 'N° DEVIS : ' + meta.devisId;
             document.getElementById('pdf-date').innerText = 'Date : ' + meta.dateStr;
             document.getElementById('pdf-client-name').innerText = meta.clientName;
@@ -477,11 +520,13 @@
             document.getElementById('pdf-total-ttc').innerText = document.getElementById('total-ttc').innerText;
 
             const element = document.getElementById('pdf-template');
+            
+            // Options html2pdf optimisées sans centrage vertical
             const opt = {
-                margin:       [10, 10, 10, 10],
+                margin:       [0, 0, 0, 0],
                 filename:     meta.fileName,
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, logging: false },
+                html2canvas:  { scale: 2, useCORS: true, logging: false, scrollY: 0 },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
@@ -681,7 +726,6 @@
                     recognition = new SpeechRecognition();
                     recognition.lang = 'fr-FR';
                     
-                    // Ajustement WebKit / Safari
                     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
                     recognition.continuous = !isSafari; 
                     recognition.interimResults = false;
@@ -938,6 +982,7 @@
 
         // INITIALISATION
         initTrialSystem();
+        loadProfileData();
         renderItems();
     </script>
 </body>
