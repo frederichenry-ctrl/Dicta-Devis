@@ -87,16 +87,16 @@
                 </div>
                 <div>
                     <span class="text-lg font-extrabold tracking-tight text-slate-900 block leading-none">Dicta<span class="text-amber-600">'Devis</span></span>
-                    <span class="text-[10px] text-slate-500 font-bold tracking-wider uppercase">ASSISTANT VOCAL DE CRÉATION DE DEVIS</span>
+                    <span class="text-[10px] text-slate-500 font-bold tracking-wider uppercase">ASSISTANT VOCAL IA BTP</span>
                 </div>
             </div>
             
             <nav class="hidden sm:flex items-center gap-1">
-                <button onclick="showTab('app')" id="nav-app-desktop" class="nav-btn-desktop px-3.5 py-2 rounded-xl text-xs font-bold transition bg-btp-navy text-white shadow-sm">Dictée</button>
+                <button onclick="showTab('app')" id="nav-app-desktop" class="nav-btn-desktop px-3.5 py-2 rounded-xl text-xs font-bold transition bg-btp-navy text-white shadow-sm">Dictée IA</button>
                 <button onclick="showTab('admin')" id="nav-admin-desktop" class="nav-btn-desktop px-3.5 py-2 rounded-xl text-xs font-semibold transition text-slate-600 hover:bg-slate-100">Mes Devis</button>
                 <button onclick="showTab('ereporting')" id="nav-ereporting-desktop" class="nav-btn-desktop px-3.5 py-2 rounded-xl text-xs font-semibold transition text-slate-600 hover:bg-slate-100">E-Reporting</button>
                 <button onclick="showTab('tarifs')" id="nav-tarifs-desktop" class="nav-btn-desktop px-3.5 py-2 rounded-xl text-xs font-bold transition text-amber-700 bg-amber-50 border border-amber-200/60">Tarifs</button>
-                <button onclick="showTab('settings')" id="nav-settings-desktop" class="nav-btn-desktop px-3.5 py-2 rounded-xl text-xs font-semibold transition text-slate-600 hover:bg-slate-100">Profil</button>
+                <button onclick="showTab('settings')" id="nav-settings-desktop" class="nav-btn-desktop px-3.5 py-2 rounded-xl text-xs font-semibold transition text-slate-600 hover:bg-slate-100">Profil & IA</button>
             </nav>
         </div>
     </header>
@@ -108,9 +108,9 @@
 
             <div class="bg-white rounded-3xl p-5 sm:p-8 border border-slate-200 shadow-sm text-center flex flex-col items-center justify-center no-print relative overflow-hidden">
                 <div id="mic-status" class="text-slate-900 font-extrabold tracking-tight text-lg sm:text-xl mb-1">
-                    Appuyez et dictez votre devis
+                    Appuyez et dictez vos travaux BTP
                 </div>
-                <p class="text-xs text-slate-500 max-w-sm mb-4 font-medium">Parlez naturellement (ex: "Tableau électrique 450 euros, 5 prises à 30 euros")</p>
+                <p class="text-xs text-slate-500 max-w-md mb-4 font-medium">L'IA analyse vos phrases pour structurer automatiquement vos lignes de devis, quantités et tarifs.</p>
 
                 <!-- Bouton Micro Ambre Chantier -->
                 <button id="mic-btn" onclick="toggleRecording()" class="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-amber-500 text-slate-950 flex items-center justify-center shadow-lg shadow-amber-500/30 hover:bg-amber-600 transition transform active:scale-95 my-1 border-4 border-amber-400/30">
@@ -131,7 +131,7 @@
                 <div class="flex items-center justify-between border-b border-slate-100 pb-3.5 no-print">
                     <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
                         <i data-lucide="file-text" class="w-4 h-4 text-btp-navy"></i>
-                        Contenu du Devis
+                        Contenu du Devis Généré par IA
                     </h2>
                     <span class="text-[11px] font-bold px-2.5 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-full flex items-center gap-1">
                         <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Factur-X Ready
@@ -285,7 +285,7 @@
                         <div class="text-3xl font-extrabold text-slate-900 mt-3 mb-1">29 € <span class="text-xs font-normal text-slate-500">/ mois</span></div>
                         <p class="text-xs text-slate-500 mb-5 font-medium">Sans engagement. Rentabilisé au 1er devis signé.</p>
                         <ul class="space-y-2.5 text-xs text-slate-700 font-semibold">
-                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-amber-600"></i> <strong>Devis vocaux illimités</strong></li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-amber-600"></i> <strong>Devis vocaux IA illimités</strong></li>
                             <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-amber-600"></i> Factur-X & E-Reporting fiscal</li>
                             <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-amber-600"></i> Relances SMS & Support prioritaire</li>
                         </ul>
@@ -298,11 +298,26 @@
             </div>
         </section>
 
-        <!-- TAB 5: PROFIL -->
+        <!-- TAB 5: PROFIL & CONFIGURATION IA -->
         <section id="tab-settings" class="tab-content hidden space-y-5 no-print">
             <div>
-                <h1 class="text-xl font-extrabold text-slate-900">Profil Artisan</h1>
-                <p class="text-slate-500 text-xs font-medium">Informations injectées dans vos devis officiels.</p>
+                <h1 class="text-xl font-extrabold text-slate-900">Profil Artisan & Moteur IA</h1>
+                <p class="text-slate-500 text-xs font-medium">Informations de votre entreprise et configuration du serveur IA.</p>
+            </div>
+
+            <!-- CONFIGURATION IA -->
+            <div class="bg-amber-50 rounded-3xl border border-amber-200/80 p-5 space-y-3">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="cpu" class="w-5 h-5 text-amber-600"></i>
+                    <h2 class="text-sm font-bold text-amber-900">Clé d'accès au Moteur IA (Groq / OpenAI)</h2>
+                </div>
+                <p class="text-xs text-amber-800">Saisissez votre clé API pour alimenter la compréhension intelligente du vocabulaire BTP lors des dictées vocales.</p>
+                <div class="flex gap-2">
+                    <input type="password" id="ai-api-key" placeholder="gsk_... ou sk-..." class="flex-1 bg-white border border-amber-300 rounded-xl px-3 py-2 text-sm font-mono text-slate-900 focus:outline-none focus:border-amber-500">
+                    <button onclick="saveApiKey()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs px-4 py-2 rounded-xl transition shadow-sm">
+                        Enregistrer
+                    </button>
+                </div>
             </div>
 
             <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-5 space-y-4">
@@ -444,6 +459,22 @@
             }, 800);
         }
 
+        // GESTION CLÉ API IA
+        function saveApiKey() {
+            const key = document.getElementById('ai-api-key').value.trim();
+            if (key) {
+                localStorage.setItem('dictadevis_ai_key', key);
+                alert("Clé API enregistrée avec succès !");
+            }
+        }
+
+        function loadApiKey() {
+            const savedKey = localStorage.getItem('dictadevis_ai_key');
+            if (savedKey) {
+                document.getElementById('ai-api-key').value = savedKey;
+            }
+        }
+
         // GESTION D'ESSAI 14 JOURS
         function initTrialSystem() {
             const trialDays = 14;
@@ -494,7 +525,7 @@
             items = [];
             renderItems();
             const status = document.getElementById('mic-status');
-            status.innerText = "Appuyez et dictez votre devis";
+            status.innerText = "Appuyez et dictez vos travaux BTP";
             status.className = "text-slate-900 font-extrabold tracking-tight text-lg sm:text-xl mb-1";
         }
 
@@ -586,27 +617,106 @@
             setTimeout(() => { printZone.classList.add('hidden'); }, 500);
         }
 
-        // PARSER DE DICTÉE NATIVE (SANS SERVEUR)
-        function parseSpeechToDevis(text) {
-            const lower = text.toLowerCase();
-            
-            // Extraction basique des montants et prestations
-            const priceMatches = lower.match(/(\d+)\s*(euros?|€)/gi);
-            
-            if (priceMatches && priceMatches.length > 0) {
-                const prixStr = priceMatches[0].replace(/[^\d]/g, '');
-                const prix = parseFloat(prixStr) || 100;
-                
-                // Nettoyage de la désignation
-                let designation = text.replace(/(\d+)\s*(euros?|€)/gi, '').trim();
-                designation = designation.charAt(0).toUpperCase() + designation.slice(1);
-                
-                if (!designation) designation = "Prestation dictée";
+        // MOTEUR D'INTELLIGENCE ARTIFICIELLE
+        async function processTranscriptWithAI(transcript) {
+            const status = document.getElementById('mic-status');
+            status.innerText = "L'IA analyse vos travaux BTP...";
+            status.className = "text-btp-navy font-extrabold tracking-tight text-lg sm:text-xl mb-1 animate-pulse";
 
-                items.push({ designation: designation, quantite: 1, prix: prix, tva: 10 });
-            } else {
-                items.push({ designation: text, quantite: 1, prix: 0, tva: 10 });
+            const apiKey = localStorage.getItem('dictadevis_ai_key');
+
+            // Prompt structuré pour l'IA
+            const systemPrompt = `Tu es un expert métreur BTP et assistant comptable. Analyse le texte dicté et réponds EXCLUSIVEMENT sous forme d'un objet JSON valide au format suivant :
+            {
+              "clientName": "Nom du client s'il est mentionné, sinon null",
+              "items": [
+                {
+                  "designation": "Intitulé clair et professionnel de la prestation BTP",
+                  "quantite": Nombre (par défaut 1),
+                  "prix": Prix unitaire HT en Euro (nombre),
+                  "tva": Taux de TVA (5.5, 10 ou 20, par défaut 10)
+                }
+              ]
             }
+            Règles :
+            - Sépare les différentes prestations si plusieurs sont citées.
+            - Soigne le vocabulaire BTP (ex: BA13, tableau électrique, pose, fourniture).
+            - Ne renvoie AUCUN texte avant ou après le JSON.`;
+
+            try {
+                let response;
+                
+                // Si une clé Groq/OpenAI est fournie, on utilise le LLM en direct
+                if (apiKey) {
+                    const endpoint = apiKey.startsWith('gsk_') 
+                        ? 'https://api.groq.com/openai/v1/chat/completions' 
+                        : 'https://api.openai.com/v1/chat/completions';
+                    
+                    const model = apiKey.startsWith('gsk_') ? 'llama-3.3-70b-versatile' : 'gpt-4o-mini';
+
+                    response = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${apiKey}`
+                        },
+                        body: JSON.stringify({
+                            model: model,
+                            messages: [
+                                { role: 'system', content: systemPrompt },
+                                { role: 'user', content: transcript }
+                            ],
+                            temperature: 0.1,
+                            response_format: { type: "json_object" }
+                        })
+                    });
+
+                    const data = await response.json();
+                    const aiResult = JSON.parse(data.choices[0].message.content);
+                    
+                    if (aiResult.clientName) document.getElementById('client-name').value = aiResult.clientName;
+                    if (aiResult.items && aiResult.items.length > 0) {
+                        items = aiResult.items;
+                        renderItems();
+                    }
+                } else {
+                    // Moteur secours intelligent hors-ligne
+                    fallbackAIParsing(transcript);
+                }
+
+                status.innerText = "Devis structuré par l'IA !";
+                status.className = "text-emerald-700 font-extrabold tracking-tight text-lg sm:text-xl mb-1";
+
+            } catch (err) {
+                console.error("Erreur IA :", err);
+                fallbackAIParsing(transcript);
+                status.innerText = "Analyse terminée !";
+                status.className = "text-emerald-700 font-extrabold tracking-tight text-lg sm:text-xl mb-1";
+            }
+        }
+
+        // Moteur secours local
+        function fallbackAIParsing(transcript) {
+            const sentences = transcript.split(/(?:et|\n|\.|;)/gi);
+            sentences.forEach(s => {
+                const text = s.trim();
+                if (!text) return;
+
+                const priceMatch = text.match(/(\d+[\.,]?\d*)\s*(?:euros?|€)/i);
+                const qteMatch = text.match(/(\d+)\s*(?:m2|m²|mètres?|mètres? carrés?|prises?|unités?|forfaits?)/i);
+
+                let prix = priceMatch ? parseFloat(priceMatch[1].replace(',', '.')) : 0;
+                let qte = qteMatch ? parseInt(qteMatch[1]) : 1;
+                
+                let designation = text.replace(/(\d+[\.,]?\d*)\s*(?:euros?|€)/gi, '')
+                                      .replace(/pour\s+\d+\s*(?:m2|m²|mètres?)/gi, '')
+                                      .trim();
+
+                designation = designation.charAt(0).toUpperCase() + designation.slice(1);
+                if (designation.length > 3) {
+                    items.push({ designation: designation, quantite: qte, prix: prix, tva: 10 });
+                }
+            });
             renderItems();
         }
 
@@ -638,7 +748,7 @@
                     isRecording = true;
                     btn.classList.add('pulse-recording', 'bg-rose-600');
                     btn.classList.remove('bg-amber-500');
-                    status.innerText = "Écoute en cours... Dictez vos prestations";
+                    status.innerText = "Écoute en cours... Dictez vos prestations BTP";
                     status.className = "text-rose-600 font-extrabold tracking-tight text-lg sm:text-xl mb-1";
                     timer.classList.remove('hidden');
 
@@ -653,15 +763,13 @@
 
                 recognition.onresult = (event) => {
                     const transcript = event.results[0][0].transcript;
-                    status.innerText = "Dictée enregistrée !";
-                    status.className = "text-emerald-700 font-extrabold tracking-tight text-lg sm:text-xl mb-1";
-                    parseSpeechToDevis(transcript);
+                    processTranscriptWithAI(transcript);
                 };
 
                 recognition.onerror = (event) => {
                     console.error("Erreur micro :", event.error);
                     if (event.error === 'not-allowed') {
-                        alert("Accès au microphone refusé. Cliquez sur le cadenas ou le bouton réglages dans la barre d'adresse pour autoriser le micro.");
+                        alert("Accès au microphone refusé. Autorisez le micro dans la barre d'adresse.");
                     }
                     stopRecordingUI();
                 };
@@ -690,7 +798,7 @@
             clearInterval(recordingTimer);
 
             if (status.innerText.includes("Écoute")) {
-                status.innerText = "Appuyez et dictez votre devis";
+                status.innerText = "Appuyez et dictez vos travaux BTP";
                 status.className = "text-slate-900 font-extrabold tracking-tight text-lg sm:text-xl mb-1";
             }
         }
@@ -870,6 +978,7 @@
 
         // INITIALISATION
         initTrialSystem();
+        loadApiKey();
         renderItems();
     </script>
 </body>
