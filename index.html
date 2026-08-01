@@ -57,12 +57,14 @@
             100% { transform: scale(0.96); box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); }
         }
 
-        /* Style spécifique pour la zone PDF générée */
+        /* Gabarit A4 strict pour html2pdf */
         #pdf-template {
-            background: white;
+            width: 750px;
+            background: #ffffff;
             color: #0f172a;
-            padding: 30px;
-            font-size: 12px;
+            padding: 40px;
+            font-family: 'Plus Jakarta Sans', Arial, sans-serif;
+            box-sizing: border-box;
         }
     </style>
 </head>
@@ -127,10 +129,10 @@
                 <div class="flex items-center justify-between border-b border-slate-100 pb-3.5 no-print">
                     <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
                         <i data-lucide="file-text" class="w-4 h-4 text-btp-navy"></i>
-                        Contenu du Devis Généré par IA
+                        Contenu du Devis Généré
                     </h2>
-                    <span class="text-[11px] font-bold px-2.5 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-full flex items-center gap-1">
-                        <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Factur-X Ready
+                    <span class="text-[11px] font-bold px-2.5 py-1 bg-blue-50 text-btp-navy border border-blue-200 rounded-full flex items-center gap-1" id="devis-ref-badge">
+                        <i data-lucide="file-check" class="w-3.5 h-3.5"></i> Devis Officiel
                     </span>
                 </div>
 
@@ -282,7 +284,6 @@
                         <p class="text-xs text-slate-500 mb-5 font-medium">Sans engagement. Rentabilisé au 1er devis signé.</p>
                         <ul class="space-y-2.5 text-xs text-slate-700 font-semibold">
                             <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-amber-600"></i> <strong>Devis vocaux IA illimités</strong></li>
-                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-amber-600"></i> Factur-X & E-Reporting fiscal</li>
                             <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-amber-600"></i> Relances SMS & Support prioritaire</li>
                         </ul>
                     </div>
@@ -355,54 +356,55 @@
     </div>
 
     <!-- GABARIT CACHÉ POUR GÉNÉRATION PDF -->
-    <div style="display: none;">
+    <div style="position: absolute; left: -9999px; top: -9999px;">
         <div id="pdf-template">
-            <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #cbd5e1; padding-bottom: 12px; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #1e3a8a; padding-bottom: 12px; margin-bottom: 24px;">
                 <div>
-                    <h1 style="font-size: 20px; font-weight: 800; color: #0f172a;" id="pdf-company-name">ENTREPRISE BTP</h1>
-                    <p style="margin: 2px 0;" id="pdf-company-siret">SIRET : -</p>
-                    <p style="margin: 2px 0;" id="pdf-insurance">Décennale : -</p>
+                    <h1 style="font-size: 22px; font-weight: 800; color: #1e3a8a; margin: 0 0 4px 0;" id="pdf-company-name">ENTREPRISE BTP</h1>
+                    <p style="margin: 2px 0; font-size: 11px; color: #475569;" id="pdf-company-siret">SIRET : -</p>
+                    <p style="margin: 2px 0; font-size: 11px; color: #475569;" id="pdf-insurance">Décennale : -</p>
                 </div>
                 <div style="text-align: right;">
-                    <h2 style="font-size: 16px; font-weight: 800; color: #1e3a8a;">DEVIS OFFICIEL BTP</h2>
-                    <p style="margin: 2px 0;" id="pdf-date">Date : -</p>
+                    <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin: 0 0 4px 0;">DEVIS PRESTATIF</h2>
+                    <p style="margin: 2px 0; font-size: 12px; font-weight: 700; color: #1e3a8a;" id="pdf-devis-number">N° DEVIS : -</p>
+                    <p style="margin: 2px 0; font-size: 11px; color: #64748b;" id="pdf-date">Date : -</p>
                 </div>
             </div>
 
-            <div style="background-color: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
-                <p style="font-size: 10px; font-weight: 700; color: #64748b; margin: 0 0 4px 0;">CLIENT :</p>
-                <p style="font-size: 14px; font-weight: 800; margin: 0;" id="pdf-client-name">-</p>
-                <p style="margin: 2px 0;" id="pdf-client-phone">-</p>
-                <p style="margin: 2px 0;" id="pdf-client-email">-</p>
+            <div style="background-color: #f8fafc; padding: 14px; border-radius: 8px; margin-bottom: 24px; border: 1px solid #e2e8f0;">
+                <p style="font-size: 10px; font-weight: 700; color: #64748b; margin: 0 0 4px 0; text-transform: uppercase;">DESTINATAIRE :</p>
+                <p style="font-size: 14px; font-weight: 800; color: #0f172a; margin: 0 0 2px 0;" id="pdf-client-name">-</p>
+                <p style="margin: 2px 0; font-size: 11px; color: #475569;" id="pdf-client-phone">-</p>
+                <p style="margin: 2px 0; font-size: 11px; color: #475569;" id="pdf-client-email">-</p>
             </div>
 
-            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 11px;">
                 <thead>
-                    <tr style="background-color: #f1f5f9; border-bottom: 1px solid #cbd5e1; font-weight: 700; text-align: left;">
-                        <th style="padding: 8px;">Prestation</th>
-                        <th style="padding: 8px; text-align: center;">Qté</th>
-                        <th style="padding: 8px; text-align: right;">Prix HT</th>
-                        <th style="padding: 8px; text-align: right;">TVA</th>
-                        <th style="padding: 8px; text-align: right;">Total HT</th>
+                    <tr style="background-color: #f1f5f9; border-bottom: 2px solid #cbd5e1; color: #1e3a8a; font-weight: 800; text-align: left;">
+                        <th style="padding: 10px; width: 50%;">Désignation des prestations</th>
+                        <th style="padding: 10px; text-align: center; width: 10%;">Qté</th>
+                        <th style="padding: 10px; text-align: right; width: 15%;">Prix HT</th>
+                        <th style="padding: 10px; text-align: right; width: 10%;">TVA</th>
+                        <th style="padding: 10px; text-align: right; width: 15%;">Total HT</th>
                     </tr>
                 </thead>
                 <tbody id="pdf-items-body"></tbody>
             </table>
 
             <div style="display: flex; justify-content: flex-end; margin-bottom: 30px;">
-                <div style="width: 250px;">
-                    <div style="display: flex; justify-content: space-between; padding: 4px 0;"><span>Total HT :</span><span id="pdf-total-ht">0.00 €</span></div>
-                    <div style="display: flex; justify-content: space-between; padding: 4px 0;"><span>TVA :</span><span id="pdf-total-tva">0.00 €</span></div>
-                    <div style="display: flex; justify-content: space-between; padding: 8px 0; border-top: 2px solid #0f172a; font-weight: 800; font-size: 14px;">
+                <div style="width: 260px; background-color: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <div style="display: flex; justify-content: space-between; padding: 3px 0; font-size: 11px; color: #475569;"><span>Total HT :</span><span id="pdf-total-ht" style="font-weight: 600;">0.00 €</span></div>
+                    <div style="display: flex; justify-content: space-between; padding: 3px 0; font-size: 11px; color: #475569;"><span>Montant TVA :</span><span id="pdf-total-tva" style="font-weight: 600;">0.00 €</span></div>
+                    <div style="display: flex; justify-content: space-between; padding: 8px 0 0 0; border-top: 2px solid #1e3a8a; font-weight: 800; font-size: 14px; color: #0f172a; margin-top: 4px;">
                         <span>TOTAL TTC :</span><span id="pdf-total-ttc" style="color: #d97706;">0.00 €</span>
                     </div>
                 </div>
             </div>
 
-            <div style="border-top: 1px solid #e2e8f0; padding-top: 12px; text-align: center; color: #64748b; font-size: 10px;">
-                <p>Mentions légales : Devis valable 30 jours à compter de son émission.</p>
-                <p style="font-weight: 700; margin-top: 8px;">Bon pour accord et signature du client :</p>
-                <div style="height: 50px; border: 1px dashed #cbd5e1; margin: 8px auto 0 auto; width: 200px; border-radius: 6px;"></div>
+            <div style="border-top: 1px solid #e2e8f0; padding-top: 14px; text-align: center; color: #64748b; font-size: 10px;">
+                <p style="margin: 0 0 4px 0;">Mentions légales : Devis valable 30 jours à compter de son émission. Règlement selon conditions convenues.</p>
+                <p style="font-weight: 700; color: #0f172a; margin: 10px 0 4px 0;">Bon pour accord et signature du client :</p>
+                <div style="height: 55px; border: 1px dashed #cbd5e1; margin: 6px auto 0 auto; width: 220px; border-radius: 6px; background-color: #fafafa;"></div>
             </div>
         </div>
     </div>
@@ -410,10 +412,10 @@
     <script>
         lucide.createIcons();
 
-        // ⚠️ COLLES TON URL VERCEL ICI
+        // URL Vercel Micro-Backend
         const BACKEND_API_URL = "https://dictadevis-api.vercel.app/api/transcribe";
 
-        // INTEGRATION STRIPE
+        // Lien Stripe officiel
         const stripeCheckoutUrl = "https://buy.stripe.com/28E9AT0x19KTgfF0tFbfO00";
 
         function redirectToStripeCheckout() {
@@ -424,31 +426,48 @@
             }
         }
 
-        // GENERATEUR DE VRAI PDF BINAIRE
-        function downloadPDF() {
-            const clientName = document.getElementById('client-name').value || 'Client';
+        // GENERATEUR NUMERO ET NOM DE DEVIS
+        function getDevisMetadata() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
             
-            // Injection des données dans la maquette PDF
+            const clientName = document.getElementById('client-name').value.trim() || 'Client';
+            const cleanClient = clientName.replace(/[^a-zA-Z0-9]/g, '_');
+            
+            const devisId = `DEV-${year}-${month}${day}`;
+            const fileName = `${devisId}_${cleanClient}.pdf`;
+
+            return { devisId, fileName, clientName, dateStr: `${day}/${month}/${year}` };
+        }
+
+        // GENERATEUR DE PDF NORMÉ A4
+        function downloadPDF() {
+            const meta = getDevisMetadata();
+
             document.getElementById('pdf-company-name').innerText = document.getElementById('company-name').value;
             document.getElementById('pdf-company-siret').innerText = 'SIRET : ' + document.getElementById('company-siret').value;
             document.getElementById('pdf-insurance').innerText = 'Décennale : ' + document.getElementById('insurance-name').value;
-            document.getElementById('pdf-date').innerText = 'Date : ' + new Date().toLocaleDateString('fr-FR');
-            document.getElementById('pdf-client-name').innerText = clientName;
+            document.getElementById('pdf-devis-number').innerText = 'N° DEVIS : ' + meta.devisId;
+            document.getElementById('pdf-date').innerText = 'Date : ' + meta.dateStr;
+            document.getElementById('pdf-client-name').innerText = meta.clientName;
             document.getElementById('pdf-client-phone').innerText = 'Tél : ' + (document.getElementById('client-phone').value || '-');
             document.getElementById('pdf-client-email').innerText = 'Email : ' + (document.getElementById('client-email').value || '-');
 
             const tbody = document.getElementById('pdf-items-body');
             tbody.innerHTML = '';
-            items.forEach(item => {
+            items.forEach((item, i) => {
                 const itemHT = (item.quantite || 0) * (item.prix || 0);
                 const tr = document.createElement('tr');
-                tr.style.borderBottom = '1px solid #e2e8f0';
+                tr.style.borderBottom = '1px solid #f1f5f9';
+                tr.style.backgroundColor = i % 2 === 0 ? '#ffffff' : '#fafafa';
                 tr.innerHTML = `
-                    <td style="padding: 8px;">${item.designation || '-'}</td>
-                    <td style="padding: 8px; text-align: center;">${item.quantite || 0}</td>
-                    <td style="padding: 8px; text-align: right;">${(item.prix || 0).toFixed(2)} €</td>
-                    <td style="padding: 8px; text-align: right;">${item.tva || 0}%</td>
-                    <td style="padding: 8px; text-align: right; font-weight: 700;">${itemHT.toFixed(2)} €</td>
+                    <td style="padding: 8px 10px; font-weight: 600;">${item.designation || '-'}</td>
+                    <td style="padding: 8px 10px; text-align: center;">${item.quantite || 0}</td>
+                    <td style="padding: 8px 10px; text-align: right;">${(item.prix || 0).toFixed(2)} €</td>
+                    <td style="padding: 8px 10px; text-align: right;">${item.tva || 0}%</td>
+                    <td style="padding: 8px 10px; text-align: right; font-weight: 700; color: #1e3a8a;">${itemHT.toFixed(2)} €</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -457,24 +476,21 @@
             document.getElementById('pdf-total-tva').innerText = document.getElementById('total-tva').innerText;
             document.getElementById('pdf-total-ttc').innerText = document.getElementById('total-ttc').innerText;
 
-            // Options de génération html2pdf
             const element = document.getElementById('pdf-template');
-            const cleanName = clientName.replace(/[^a-zA-Z0-9]/g, '_');
             const opt = {
-                margin:       10,
-                filename:     `Devis_BTP_${cleanName}.pdf`,
+                margin:       [10, 10, 10, 10],
+                filename:     meta.fileName,
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 },
+                html2canvas:  { scale: 2, useCORS: true, logging: false },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            // Génération et téléchargement
             html2pdf().set(opt).from(element).save();
         }
 
         // ENVOI PAR EMAIL
         function exportEmailWithAttachment() {
-            const client = document.getElementById('client-name').value || 'Client';
+            const meta = getDevisMetadata();
             const email = document.getElementById('client-email').value;
             const total = document.getElementById('total-ttc').innerText;
 
@@ -485,10 +501,10 @@
 
             downloadPDF();
 
-            alert(`1. Le vrai fichier PDF vient d'être téléchargé.\n2. Votre application e-mail s'ouvre : joignez le fichier PDF téléchargé avant de l'envoyer.`);
+            alert(`1. Le devis PDF "${meta.fileName}" a été généré.\n2. Dans votre messagerie qui va s'ouvrir, joignez le fichier téléchargé.`);
 
-            const subject = encodeURIComponent(`Votre Devis BTP — ${client}`);
-            const body = encodeURIComponent(`Bonjour ${client},\n\nVeuillez trouver ci-joint votre devis BTP d'un montant de ${total}.\n\nRestant à votre entière disposition,\n\nCordialement.`);
+            const subject = encodeURIComponent(`Devis BTP ${meta.devisId} — ${meta.clientName}`);
+            const body = encodeURIComponent(`Bonjour ${meta.clientName},\n\nVeuillez trouver ci-joint votre devis BTP (${meta.devisId}) d'un montant de ${total}.\n\nRestant à votre disposition pour tout renseignement complémentaire.\n\nCordialement.`);
             
             setTimeout(() => {
                 window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
@@ -641,6 +657,7 @@
             }
         }
 
+        // CORRECTIF COMPATIBILITÉ APPLE (SAFARI & IOS)
         function toggleRecording() {
             if (!initTrialSystem()) {
                 alert("Votre période d'essai de 14 jours est écoulée. Passez à l'offre Pro pour continuer.");
@@ -651,7 +668,7 @@
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
             if (!SpeechRecognition) {
-                alert("La reconnaissance vocale directe n'est pas supportée sur ce navigateur. Veuillez utiliser Google Chrome ou Safari.");
+                alert("La reconnaissance vocale n'est pas activée sur ce navigateur Safari/Apple. Activez la dictée vocale dans les réglages iOS ou utilisez Google Chrome.");
                 return;
             }
 
@@ -660,49 +677,71 @@
             const timer = document.getElementById('timer');
 
             if (!isRecording) {
-                recognition = new SpeechRecognition();
-                recognition.lang = 'fr-FR';
-                recognition.continuous = false;
-                recognition.interimResults = false;
+                try {
+                    recognition = new SpeechRecognition();
+                    recognition.lang = 'fr-FR';
+                    
+                    // Ajustement WebKit / Safari
+                    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+                    recognition.continuous = !isSafari; 
+                    recognition.interimResults = false;
 
-                recognition.onstart = () => {
-                    isRecording = true;
-                    btn.classList.add('pulse-recording', 'bg-rose-600');
-                    btn.classList.remove('bg-amber-500');
-                    status.innerText = "Écoute en cours... Dictez vos prestations BTP";
-                    status.className = "text-rose-600 font-extrabold tracking-tight text-lg sm:text-xl mb-1";
-                    timer.classList.remove('hidden');
+                    recognition.onstart = () => {
+                        isRecording = true;
+                        btn.classList.add('pulse-recording', 'bg-rose-600');
+                        btn.classList.remove('bg-amber-500');
+                        status.innerText = "Écoute en cours... Dictez vos prestations BTP";
+                        status.className = "text-rose-600 font-extrabold tracking-tight text-lg sm:text-xl mb-1";
+                        timer.classList.remove('hidden');
 
-                    timerSeconds = 0;
-                    recordingTimer = setInterval(() => {
-                        timerSeconds++;
-                        const mins = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
-                        const secs = String(timerSeconds % 60).padStart(2, '0');
-                        timer.innerText = `${mins}:${secs}`;
-                    }, 1000);
-                };
+                        timerSeconds = 0;
+                        recordingTimer = setInterval(() => {
+                            timerSeconds++;
+                            const mins = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
+                            const secs = String(timerSeconds % 60).padStart(2, '0');
+                            timer.innerText = `${mins}:${secs}`;
+                        }, 1000);
+                    };
 
-                recognition.onresult = (event) => {
-                    const transcript = event.results[0][0].transcript;
-                    processTranscriptWithBackendAI(transcript);
-                };
+                    recognition.onresult = (event) => {
+                        let transcript = '';
+                        for (let i = event.resultIndex; i < event.results.length; ++i) {
+                            if (event.results[i].isFinal) {
+                                transcript += event.results[i][0].transcript;
+                            }
+                        }
+                        if (!transcript && event.results[0]) {
+                            transcript = event.results[0][0].transcript;
+                        }
+                        if (transcript.trim()) {
+                            processTranscriptWithBackendAI(transcript);
+                        }
+                    };
 
-                recognition.onerror = (event) => {
-                    console.error("Erreur micro :", event.error);
-                    if (event.error === 'not-allowed') {
-                        alert("Accès au microphone refusé. Autorisez le micro dans la barre d'adresse.");
-                    }
+                    recognition.onerror = (event) => {
+                        console.error("Erreur micro Safari/Apple :", event.error);
+                        if (event.error === 'not-allowed') {
+                            alert("Accès au microphone refusé. Réautorisez le micro dans Réglages > Safari > Microphone.");
+                        }
+                        stopRecordingUI();
+                    };
+
+                    recognition.onend = () => {
+                        stopRecordingUI();
+                    };
+
+                    recognition.start();
+
+                } catch (e) {
+                    console.error("Erreur d'initialisation Safari :", e);
+                    alert("Impossible de démarrer le micro sur cet appareil Apple.");
                     stopRecordingUI();
-                };
-
-                recognition.onend = () => {
-                    stopRecordingUI();
-                };
-
-                recognition.start();
+                }
 
             } else {
-                if (recognition) recognition.stop();
+                if (recognition) {
+                    try { recognition.stop(); } catch(e){}
+                }
                 stopRecordingUI();
             }
         }
@@ -760,15 +799,15 @@
         }
 
         function saveDevis(statut) {
-            const client = document.getElementById('client-name').value || 'Client Inconnu';
+            const meta = getDevisMetadata();
             const totalTTC = document.getElementById('total-ttc').innerText;
 
             if (items.length === 0) { alert("Ajoutez au moins une prestation."); return; }
 
             const newDevis = {
-                id: 'DEV-' + Math.floor(1000 + Math.random() * 9000),
-                date: new Date().toLocaleDateString('fr-FR'),
-                client: client,
+                id: meta.devisId,
+                date: meta.dateStr,
+                client: meta.clientName,
                 phone: document.getElementById('client-phone').value || '',
                 email: document.getElementById('client-email').value || '',
                 total: totalTTC,
@@ -779,7 +818,7 @@
 
             devisList.unshift(newDevis);
             localStorage.setItem('dictadevis_data', JSON.stringify(devisList));
-            alert(`Devis enregistré dans "Mes Devis" !`);
+            alert(`Devis ${meta.devisId} enregistré dans "Mes Devis" !`);
             resetForm();
             showTab('admin');
         }
