@@ -110,7 +110,7 @@
                 <div id="mic-status" class="text-slate-900 font-extrabold tracking-tight text-lg sm:text-xl mb-1">
                     Appuyez et dictez votre devis
                 </div>
-                <p class="text-xs text-slate-500 max-w-sm mb-4 font-medium">L'IA analyse vos paroles pour créer le devis immédiatement.</p>
+                <p class="text-xs text-slate-500 max-w-sm mb-4 font-medium">Parlez naturellement (ex: "Tableau électrique 450 euros, 5 prises à 30 euros")</p>
 
                 <!-- Bouton Micro Ambre Chantier -->
                 <button id="mic-btn" onclick="toggleRecording()" class="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-amber-500 text-slate-950 flex items-center justify-center shadow-lg shadow-amber-500/30 hover:bg-amber-600 transition transform active:scale-95 my-1 border-4 border-amber-400/30">
@@ -471,8 +471,7 @@
         let isRecording = false;
         let recordingTimer = null;
         let timerSeconds = 0;
-        let mediaRecorder = null;
-        let audioChunks = [];
+        let recognition = null;
         
         let items = [];
         let devisList = JSON.parse(localStorage.getItem('dictadevis_data') || '[]');
@@ -587,10 +586,41 @@
             setTimeout(() => { printZone.classList.add('hidden'); }, 500);
         }
 
-        async function toggleRecording() {
+        // PARSER DE DICTÉE NATIVE (SANS SERVEUR)
+        function parseSpeechToDevis(text) {
+            const lower = text.toLowerCase();
+            
+            // Extraction basique des montants et prestations
+            const priceMatches = lower.match(/(\d+)\s*(euros?|€)/gi);
+            
+            if (priceMatches && priceMatches.length > 0) {
+                const prixStr = priceMatches[0].replace(/[^\d]/g, '');
+                const prix = parseFloat(prixStr) || 100;
+                
+                // Nettoyage de la désignation
+                let designation = text.replace(/(\d+)\s*(euros?|€)/gi, '').trim();
+                designation = designation.charAt(0).toUpperCase() + designation.slice(1);
+                
+                if (!designation) designation = "Prestation dictée";
+
+                items.push({ designation: designation, quantite: 1, prix: prix, tva: 10 });
+            } else {
+                items.push({ designation: text, quantite: 1, prix: 0, tva: 10 });
+            }
+            renderItems();
+        }
+
+        function toggleRecording() {
             if (!initTrialSystem()) {
                 alert("Votre période d'essai de 14 jours est écoulée. Passez à l'offre Pro pour continuer.");
                 showTab('tarifs');
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+            if (!SpeechRecognition) {
+                alert("La reconnaissance vocale directe n'est pas supportée sur ce navigateur. Veuillez utiliser Google Chrome ou Safari.");
                 return;
             }
 
@@ -599,38 +629,17 @@
             const timer = document.getElementById('timer');
 
             if (!isRecording) {
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    mediaRecorder = new MediaRecorder(stream);
-                    audioChunks = [];
+                recognition = new SpeechRecognition();
+                recognition.lang = 'fr-FR';
+                recognition.continuous = false;
+                recognition.interimResults = false;
 
-                    mediaRecorder.ondataavailable = event => { if (event.data.size > 0) audioChunks.push(event.data); };
-
-                    mediaRecorder.onstop = async () => {
-                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                        status.innerText = "Analyse IA en cours...";
-                        status.className = "text-btp-navy font-extrabold tracking-tight text-lg sm:text-xl mb-1";
-
-                        try {
-                            const response = await fetch('/api/transcribe', { method: 'POST', headers: { 'Content-Type': 'audio/webm' }, body: audioBlob });
-                            const result = await response.json();
-                            if (result.success && result.data) {
-                                if (result.data.clientName && result.data.clientName !== "Inconnu") document.getElementById('client-name').value = result.data.clientName;
-                                if (result.data.items && result.data.items.length > 0) { items = result.data.items; renderItems(); }
-                                status.innerText = "Devis prêt !";
-                                status.className = "text-emerald-700 font-extrabold tracking-tight text-lg sm:text-xl mb-1";
-                            }
-                        } catch (err) {
-                            status.innerText = "Serveur non connecté. Utilisez le bouton d'injection pour tester !";
-                            status.className = "text-rose-600 font-bold text-xs mb-1";
-                        }
-                    };
-
-                    mediaRecorder.start();
+                recognition.onstart = () => {
                     isRecording = true;
                     btn.classList.add('pulse-recording', 'bg-rose-600');
                     btn.classList.remove('bg-amber-500');
-                    status.innerText = "Écoute en cours... Dictez les prestations";
+                    status.innerText = "Écoute en cours... Dictez vos prestations";
+                    status.className = "text-rose-600 font-extrabold tracking-tight text-lg sm:text-xl mb-1";
                     timer.classList.remove('hidden');
 
                     timerSeconds = 0;
@@ -640,14 +649,49 @@
                         const secs = String(timerSeconds % 60).padStart(2, '0');
                         timer.innerText = `${mins}:${secs}`;
                     }, 1000);
+                };
 
-                } catch (err) { alert("Autorisez l'accès au micro."); }
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    status.innerText = "Dictée enregistrée !";
+                    status.className = "text-emerald-700 font-extrabold tracking-tight text-lg sm:text-xl mb-1";
+                    parseSpeechToDevis(transcript);
+                };
+
+                recognition.onerror = (event) => {
+                    console.error("Erreur micro :", event.error);
+                    if (event.error === 'not-allowed') {
+                        alert("Accès au microphone refusé. Cliquez sur le cadenas ou le bouton réglages dans la barre d'adresse pour autoriser le micro.");
+                    }
+                    stopRecordingUI();
+                };
+
+                recognition.onend = () => {
+                    stopRecordingUI();
+                };
+
+                recognition.start();
+
             } else {
-                isRecording = false;
-                if (mediaRecorder && mediaRecorder.state !== "inactive") mediaRecorder.stop();
-                btn.classList.remove('pulse-recording', 'bg-rose-600');
-                btn.classList.add('bg-amber-500');
-                clearInterval(recordingTimer);
+                if (recognition) recognition.stop();
+                stopRecordingUI();
+            }
+        }
+
+        function stopRecordingUI() {
+            isRecording = false;
+            const btn = document.getElementById('mic-btn');
+            const status = document.getElementById('mic-status');
+            const timer = document.getElementById('timer');
+
+            btn.classList.remove('pulse-recording', 'bg-rose-600');
+            btn.classList.add('bg-amber-500');
+            timer.classList.add('hidden');
+            clearInterval(recordingTimer);
+
+            if (status.innerText.includes("Écoute")) {
+                status.innerText = "Appuyez et dictez votre devis";
+                status.className = "text-slate-900 font-extrabold tracking-tight text-lg sm:text-xl mb-1";
             }
         }
 
